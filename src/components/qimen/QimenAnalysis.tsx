@@ -20,6 +20,7 @@ import {
   getMatterPalace,
   MATTER_CONFIG 
 } from '@/lib/qimen/symbolism';
+import { analyzeGod, GodAnalysis } from '@/lib/qimen/godAnalysis';
 
 interface QimenAnalysisProps {
   plate: QimenPlate;
@@ -28,7 +29,185 @@ interface QimenAnalysisProps {
 }
 
 type AnalysisMode = 'basic' | 'advanced';
-type AnalysisView = 'palaces' | 'matters' | 'overall' | 'qiyi' | 'combinations';
+type AnalysisView = 'palaces' | 'matters' | 'overall' | 'qiyi' | 'combinations' | 'god';
+
+// 用神分析視圖組件
+function GodAnalysisView({ 
+  plate, 
+  matterType, 
+  liuqin,
+  mode 
+}: { 
+  plate: QimenPlate; 
+  matterType: MatterType; 
+  liuqin?: string;
+  mode: AnalysisMode;
+}) {
+  const godAnalysis = analyzeGod(plate, matterType, liuqin);
+  
+  const getLevelStyles = (level: GodAnalysis['level']) => {
+    const styles = {
+      '大吉': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300',
+      '吉': 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400',
+      '平': 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400',
+      '凶': 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300',
+      '大凶': 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300',
+    };
+    return styles[level];
+  };
+  
+  const getSuitabilityStyles = (suit: '吉' | '平' | '凶') => {
+    const styles = {
+      '吉': 'text-green-600 bg-green-50',
+      '平': 'text-yellow-600 bg-yellow-50',
+      '凶': 'text-red-600 bg-red-50',
+    };
+    return styles[suit];
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 用神概覽 */}
+      <div className={cn(
+        "p-4 rounded-lg border",
+        getLevelStyles(godAnalysis.level)
+      )}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="font-bold text-lg">
+              {MATTER_CONFIG[matterType].name}用神分析
+            </h3>
+            <p className="text-sm opacity-80">{godAnalysis.godDescription}</p>
+          </div>
+          <div className="text-right">
+            <Badge className={cn("font-bold text-lg px-3 py-1", getLevelStyles(godAnalysis.level))}>
+              {godAnalysis.level}
+            </Badge>
+            <p className="text-sm mt-1">{godAnalysis.score}分</p>
+          </div>
+        </div>
+        
+        <p className="text-base leading-relaxed">{godAnalysis.summary}</p>
+      </div>
+
+      {/* 詳細分析 */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* 八門分析 */}
+        <div className="p-4 border rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold">八門分析</h4>
+            <Badge className={getSuitabilityStyles(godAnalysis.details.doorSuitability)}>
+              {godAnalysis.details.doorSuitability}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {godAnalysis.details.door || '無門星'}：{godAnalysis.details.doorAnalysis}
+          </p>
+        </div>
+
+        {/* 九星分析 */}
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">九星分析</h4>
+          <p className="text-sm text-muted-foreground">
+            {godAnalysis.details.star || '無星'}：{godAnalysis.details.starAnalysis}
+          </p>
+        </div>
+
+        {/* 八神分析 */}
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">八神分析</h4>
+          <p className="text-sm text-muted-foreground">
+            {godAnalysis.details.spirit || '無神'}：{godAnalysis.details.spiritAnalysis}
+          </p>
+        </div>
+
+        {/* 天盤干分析 */}
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">天盤干分析</h4>
+          <p className="text-sm text-muted-foreground">
+            {godAnalysis.details.heavenStem || '無干'}：{godAnalysis.details.heavenStemAnalysis}
+          </p>
+          {godAnalysis.details.hasOddity && (
+            <Badge className="mt-2 bg-amber-100 text-amber-800 border-amber-300">
+              {godAnalysis.details.oddityEffect}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* 時間與方位 */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">時間因素</h4>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm">季節：</span>
+            <Badge className={getSuitabilityStyles(godAnalysis.timing.suitability)}>
+              {godAnalysis.timing.suitability}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">{godAnalysis.timing.reason}</p>
+        </div>
+
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">方位建議</h4>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm">{godAnalysis.direction.direction}方（{godAnalysis.direction.trigram}卦）</span>
+            <Badge className={getSuitabilityStyles(godAnalysis.direction.suitability)}>
+              {godAnalysis.direction.suitability}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">{godAnalysis.direction.advice}</p>
+        </div>
+      </div>
+
+      {/* 針對問事的建議 */}
+      <div className="p-4 border rounded-lg">
+        <h4 className="font-semibold mb-3">針對{MATTER_CONFIG[matterType].name}的建議</h4>
+        <ul className="space-y-2">
+          {godAnalysis.matterAdvice.map((advice, idx) => (
+            <li key={idx} className="flex items-start gap-2 text-sm">
+              <span className="text-primary">•</span>
+              {advice}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 進階模式：更多細節 */}
+      {mode === 'advanced' && (
+        <>
+          {/* 綜合建議 */}
+          {godAnalysis.recommendations.length > 0 && (
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-900/20 dark:border-green-800">
+              <h4 className="font-semibold mb-2 text-green-800 dark:text-green-300">綜合建議</h4>
+              <ul className="space-y-1">
+                {godAnalysis.recommendations.map((rec, idx) => (
+                  <li key={idx} className="text-sm text-green-700 dark:text-green-400">
+                    ✓ {rec}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* 注意事項 */}
+          {godAnalysis.warnings.length > 0 && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
+              <h4 className="font-semibold mb-2 text-red-800 dark:text-red-300">⚠ 注意事項</h4>
+              <ul className="space-y-1">
+                {godAnalysis.warnings.map((warning, idx) => (
+                  <li key={idx} className="text-sm text-red-700 dark:text-red-400">
+                    {warning}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAnalysisProps) {
   const [mode, setMode] = useState<AnalysisMode>('basic');
@@ -102,11 +281,12 @@ export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAn
           <Tabs value={view} onValueChange={(v: string) => setView(v as AnalysisView)}>
             <TabsList className={cn(
               "grid w-full",
-              mode === 'advanced' ? 'grid-cols-5' : 'grid-cols-3'
+              mode === 'advanced' ? 'grid-cols-6' : 'grid-cols-4'
             )}>
               <TabsTrigger value="overall">全局大勢</TabsTrigger>
               <TabsTrigger value="palaces">九宮解說</TabsTrigger>
               <TabsTrigger value="matters">事項分類</TabsTrigger>
+              <TabsTrigger value="god">用神分析</TabsTrigger>
               {mode === 'advanced' && (
                 <>
                   <TabsTrigger value="qiyi">三奇六儀</TabsTrigger>
@@ -317,6 +497,16 @@ export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAn
               );
             })}
           </div>
+        )}
+
+        {/* 用神分析視圖 */}
+        {view === 'god' && (
+          <GodAnalysisView 
+            plate={plate} 
+            matterType={matterType} 
+            liuqin={liuqin}
+            mode={mode}
+          />
         )}
 
         {/* 三奇六儀視圖 */}
