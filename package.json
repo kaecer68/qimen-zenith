@@ -1,7 +1,28 @@
 {
-  "name": "qimen-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "qimen-zenith",
+  "version": "1.0.0",
+  "description": "專業級日家奇門遁甲排盤與分析系統",
+  "private": false,
+  "license": "MIT",
+  "author": "Qimen Zenith Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kaecer/qimen-zenith.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kaecer/qimen-zenith/issues"
+  },
+  "homepage": "https://github.com/kaecer/qimen-zenith#readme",
+  "keywords": [
+    "qimen",
+    "奇門遁甲",
+    "iching",
+    "chinese-metaphysics",
+    "divination",
+    "nextjs",
+    "typescript",
+    "react"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 奇門遁甲 - Qimen Zenith
 
-## Getting Started
+<p align="center">
+  <strong>專業級日家奇門遁甲排盤與分析系統</strong>
+</p>
 
-First, run the development server:
+<p align="center">
+  <a href="#功能特點">功能特點</a> •
+  <a href="#技術架構">技術架構</a> •
+  <a href="#快速開始">快速開始</a> •
+  <a href="#授權">授權</a>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js 16">
+  <img src="https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript" alt="TypeScript 5">
+  <img src="https://img.shields.io/badge/Tailwind-4-38B2AC?style=flat-square&logo=tailwind-css" alt="Tailwind CSS 4">
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT">
+</p>
+
+---
+
+## 功能特點
+
+### 核心功能
+- **日家奇門遁甲排盤**：基於農曆節氣與干支的精確排盤
+- **三奇六儀分析**：詳細的三奇（乙丙丁）與六儀組合解釋
+- **門星神組合**：八門、九星、八神交互作用的專業分析
+- **宮位吉凶評級**：自動計算各宮位分數與建議
+
+### 分析模式
+- **基礎模式**：簡潔易懂的吉凶解說
+- **進階模式**：
+  - 三奇六儀詳解（天干克應）
+  - 門星神組合分析
+  - 古典斷語與現代建議
+
+---
+
+## 技術架構
+
+```
+qimen-zenith/
+├── src/
+│   ├── app/              # Next.js App Router
+│   ├── components/        # React 元件
+│   │   ├── qimen/        # 奇門相關元件
+│   │   └── ui/           # UI 元件（shadcn/ui）
+│   └── lib/
+│       ├── qimen/        # 奇門核心演算法
+│       │   ├── core.ts   # 排盤計算
+│       │   ├── qiyiKnowledge.ts    # 三奇六儀知識庫
+│       │   └── combinationKnowledge.ts  # 門星神組合知識庫
+│       └── utils.ts      # 工具函數
+├── public/               # 靜態資源
+└── docs/                 # 文件
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 快速開始
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 環境需求
+- Node.js 18+
+- npm / yarn / pnpm
 
-## Learn More
+### 安裝
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# 克隆專案
+git clone https://github.com/kaecer/qimen-zenith.git
+cd qimen-zenith
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 安裝依賴
+npm install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 啟動開發伺服器
+npm run dev
+```
 
-## Deploy on Vercel
+開啟 http://localhost:3000 查看應用
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 建置
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+```
+
+---
+
+## 貢獻
+
+歡迎提交 Issue 和 Pull Request！
+
+### 貢獻指南
+
+1. Fork 本專案
+2. 建立特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交變更 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送分支 (`git push origin feature/AmazingFeature`)
+5. 開啟 Pull Request
+
+---
+
+## 授權
+
+本專案採用 [MIT License](LICENSE) 授權。
+
+---
+
+<p align="center">
+  <sub>Built with passion for traditional Chinese metaphysics and modern web technology.</sub>
+</p>
