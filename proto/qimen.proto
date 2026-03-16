@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+package qimen;
+
+option go_package = "github.com/kaecer/qimen-zenith/proto";
+option java_package = "com.qimen.proto";
+
+// 奇門遁甲服務
+service QimenService {
+  // 排盤 - 計算奇門遁甲盤
+  rpc CalculatePlate(CalculatePlateRequest) returns (CalculatePlateResponse);
+  
+  // 分析 - 獲取吉凶分析
+  rpc AnalyzePlate(AnalyzePlateRequest) returns (AnalyzePlateResponse);
+  
+  // 增強分析 - 含三奇六儀+門星神組合
+  rpc AnalyzeEnhanced(AnalyzeEnhancedRequest) returns (AnalyzeEnhancedResponse);
+  
+  // 健康檢查
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+// ========== 請求/響應消息 ==========
+
+message CalculatePlateRequest {
+  string date = 1;        // 日期 YYYY-MM-DD，空則使用今天
+  int32 hour = 2;         // 小時 0-23，空則使用當前小時
+  MatterType matter_type = 3;  // 問事類型
+  string liuqin = 4;      // 六親關係key
+}
+
+message CalculatePlateResponse {
+  bool success = 1;
+  string error = 2;
+  string error_code = 3;
+  QimenPlate plate = 4;
+  MetaInfo meta = 5;
+}
+
+message AnalyzePlateRequest {
+  string date = 1;
+  int32 hour = 2;
+  MatterType matter_type = 3;
+  string liuqin = 4;
+}
+
+message AnalyzePlateResponse {
+  bool success = 1;
+  string error = 2;
+  string error_code = 3;
+  QimenPlate plate = 4;
+  QimenAnalysis analysis = 5;
+  MetaInfo meta = 6;
+}
+
+message AnalyzeEnhancedRequest {
+  string date = 1;
+  int32 hour = 2;
+  MatterType matter_type = 3;
+  string liuqin = 4;
+}
+
+message AnalyzeEnhancedResponse {
+  bool success = 1;
+  string error = 2;
+  string error_code = 3;
+  QimenPlate plate = 4;
+  QimenAnalysis analysis = 5;
+  EnhancedAnalysis enhanced = 6;
+  MetaInfo meta = 7;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string status = 1;
+  string version = 2;
+  string timestamp = 3;
+}
+
+// ========== 數據結構 ==========
+
+enum MatterType {
+  MATTER_TYPE_UNSPECIFIED = 0;
+  MATTER_TYPE_GENERAL = 1;      // 一般綜合
+  MATTER_TYPE_WEALTH = 2;       // 財運求財
+  MATTER_TYPE_CAREER = 3;       // 官運事業
+  MATTER_TYPE_TRAVEL = 4;       // 出行遠行
+  MATTER_TYPE_HEALTH = 5;       // 健康疾病
+  MATTER_TYPE_RELATIONSHIP = 6; // 人際感情
+  MATTER_TYPE_STUDY = 7;        // 學業考試
+  MATTER_TYPE_LOST = 8;         // 尋人失物
+  MATTER_TYPE_LEGAL = 9;        // 訴訟官非
+  MATTER_TYPE_PROPERTY = 10;    // 田宅房產
+  MATTER_TYPE_MARRIAGE = 11;    // 婚姻感情
+  MATTER_TYPE_BUSINESS = 12;    // 生意投資
+  MATTER_TYPE_LITIGATION = 13;  // 爭訟糾紛
+}
+
+message QimenPlate {
+  string date = 1;
+  string year_gan_zhi = 2;
+  string month_gan_zhi = 3;
+  string day_gan_zhi = 4;
+  string hour_gan_zhi = 5;
+  int32 hour = 6;
+  string shichen = 7;           // 時辰名稱
+  int32 ju_number = 8;          // 局數 1-9
+  bool is_yang = 9;             // 是否陽遁
+  string yin_yang = 10;         // 陽遁/陰遁
+  string solar_term = 11;       // 節氣
+  
+  // 九宮數據 - key 為宮位數字 1-9
+  map<string, string> earth_plate = 12;   // 地盤（地盤六儀）
+  map<string, string> heaven_plate = 13;  // 天盤（天盤三奇六儀）
+  map<string, string> human_plate = 14;   // 人盤（八門）
+  map<string, string> spirit_plate = 15;  // 神盤（八神）
+  map<string, string> stars_plate = 16;   // 天星盤（九星）
+}
+
+message QimenAnalysis {
+  string overall_level = 1;     // 整體吉凶等級
+  int32 overall_score = 2;      // 整體分數 0-100
+  repeated string recommendations = 3;  // 建議事項
+  
+  // 九宮評分 - key 為宮位數字
+  map<string, PalaceRating> palace_ratings = 4;
+  
+  // 三奇六儀分析
+  repeated string qiyi_analysis = 5;
+  
+  // 門星組合亮點
+  repeated string door_star_highlights = 6;
+}
+
+message PalaceRating {
+  string level = 1;             // 大吉/吉/平/凶/大凶
+  int32 score = 2;                // 分數 0-100
+  string summary = 3;             // 評語摘要
+}
+
+message EnhancedAnalysis {
+  // 九宮增強分析
+  map<string, PalaceEnhanced> palaces = 1;
+}
+
+message PalaceEnhanced {
+  // 三奇六儀解讀
+  repeated string qiyi_meanings = 1;
+  
+  // 門星組合解讀
+  repeated string door_star_combinations = 2;
+  
+  // 門神組合解讀
+  repeated string door_spirit_combinations = 3;
+  
+  // 星神組合解讀
+  repeated string star_spirit_combinations = 4;
+  
+  // 特殊格局
+  repeated string special_patterns = 5;
+  
+  // 詳細建議
+  repeated string detailed_advice = 6;
+}
+
+message MetaInfo {
+  string timestamp = 1;
+  string version = 2;
+  string mode = 3;
+}
