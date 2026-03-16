@@ -21,6 +21,7 @@ import {
   MATTER_CONFIG 
 } from '@/lib/qimen/symbolism';
 import { analyzeGod, GodAnalysis } from '@/lib/qimen/godAnalysis';
+import { analyzePalaceKz, analyzeOverallKzPattern, analyzeGodPalaceRelations } from '@/lib/qimen/palaceRelation';
 
 interface QimenAnalysisProps {
   plate: QimenPlate;
@@ -29,7 +30,7 @@ interface QimenAnalysisProps {
 }
 
 type AnalysisMode = 'basic' | 'advanced';
-type AnalysisView = 'palaces' | 'matters' | 'overall' | 'qiyi' | 'combinations' | 'god';
+type AnalysisView = 'palaces' | 'matters' | 'overall' | 'qiyi' | 'combinations' | 'god' | 'kz';
 
 // 用神分析視圖組件
 function GodAnalysisView({ 
@@ -209,6 +210,152 @@ function GodAnalysisView({
   );
 }
 
+// 生剋關係視圖組件
+function PalaceRelationView({ 
+  plate, 
+  mainPalace,
+  matterType,
+  mode 
+}: { 
+  plate: QimenPlate; 
+  mainPalace: number;
+  matterType: MatterType;
+  mode: AnalysisMode;
+}) {
+  // 分析主宮位的生剋關係
+  const mainPalaceKz = analyzePalaceKz(mainPalace);
+  const godRelations = analyzeGodPalaceRelations(plate, mainPalace, matterType);
+  const overallPattern = analyzeOverallKzPattern(plate);
+  
+  const getEffectStyles = (effect: '吉' | '平' | '凶') => {
+    const styles = {
+      '吉': 'text-green-600 bg-green-50 border-green-200',
+      '平': 'text-yellow-600 bg-yellow-50 border-yellow-200',
+      '凶': 'text-red-600 bg-red-50 border-red-200',
+    };
+    return styles[effect];
+  };
+  
+  const getRelationStyles = (relation: string) => {
+    const styles: Record<string, string> = {
+      '生': 'text-green-600 bg-green-100',
+      '被生': 'text-green-700 bg-green-50',
+      '剋': 'text-orange-600 bg-orange-100',
+      '被剋': 'text-red-600 bg-red-100',
+      '比和': 'text-blue-600 bg-blue-50',
+    };
+    return styles[relation] || 'text-gray-600 bg-gray-50';
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 用神宮位生剋概覽 */}
+      <div className="p-4 bg-muted/50 rounded-lg">
+        <h4 className="font-semibold mb-2">
+          {mainPalaceKz.palaceName}五行生剋分析（{mainPalaceKz.element}）
+        </h4>
+        <p className="text-sm text-muted-foreground mb-3">{mainPalaceKz.summary}</p>
+        
+        {/* 生剋關係統計 */}
+        <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="p-2 bg-green-50 rounded">
+            <div className="text-xs text-muted-foreground">生我</div>
+            <div className="font-bold text-green-600">{mainPalaceKz.shengWo.length}宮</div>
+          </div>
+          <div className="p-2 bg-orange-50 rounded">
+            <div className="text-xs text-muted-foreground">剋我</div>
+            <div className="font-bold text-orange-600">{mainPalaceKz.keWo.length}宮</div>
+          </div>
+          <div className="p-2 bg-blue-50 rounded">
+            <div className="text-xs text-muted-foreground">我生</div>
+            <div className="font-bold text-blue-600">{mainPalaceKz.woSheng.length}宮</div>
+          </div>
+          <div className="p-2 bg-purple-50 rounded">
+            <div className="text-xs text-muted-foreground">我剋</div>
+            <div className="font-bold text-purple-600">{mainPalaceKz.woKe.length}宮</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 有利方位 */}
+      {godRelations.beneficial.length > 0 && (
+        <div className="p-4 border border-green-200 rounded-lg bg-green-50/50">
+          <h4 className="font-semibold mb-3 text-green-800">✓ 有利方位（來生我 / 我剋之）</h4>
+          <div className="space-y-2">
+            {godRelations.beneficial.map((rel, idx) => (
+              <div key={idx} className="flex items-center justify-between p-2 bg-white rounded">
+                <div className="flex items-center gap-2">
+                  <Badge className={getRelationStyles(rel.relation)}>{rel.relation}</Badge>
+                  <span className="font-medium">{rel.targetName}</span>
+                </div>
+                <span className="text-sm text-muted-foreground">{rel.description}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 不利方位 */}
+      {godRelations.harmful.length > 0 && (
+        <div className="p-4 border border-red-200 rounded-lg bg-red-50/50">
+          <h4 className="font-semibold mb-3 text-red-800">✗ 不利方位（來剋我 / 我生泄氣）</h4>
+          <div className="space-y-2">
+            {godRelations.harmful.map((rel, idx) => (
+              <div key={idx} className="flex items-center justify-between p-2 bg-white rounded">
+                <div className="flex items-center gap-2">
+                  <Badge className={getRelationStyles(rel.relation)}>{rel.relation}</Badge>
+                  <span className="font-medium">{rel.targetName}</span>
+                </div>
+                <span className="text-sm text-muted-foreground">{rel.description}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 方位建議 */}
+      {godRelations.recommendations.length > 0 && (
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">方位建議</h4>
+          <ul className="space-y-1">
+            {godRelations.recommendations.map((rec, idx) => (
+              <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                <span className="text-primary">•</span>
+                {rec}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* 進階模式：整體格局 */}
+      {mode === 'advanced' && (
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">九宮整體生剋格局</h4>
+          <p className="text-sm text-muted-foreground mb-3">{overallPattern.summary}</p>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-green-50 rounded">
+              <div className="text-xs text-muted-foreground mb-1">最旺宮位</div>
+              <div className="font-semibold">
+                {PALACE_SYMBOLISM[overallPattern.strongest].name}
+                （{PALACE_SYMBOLISM[overallPattern.strongest].element}）
+              </div>
+            </div>
+            <div className="p-3 bg-red-50 rounded">
+              <div className="text-xs text-muted-foreground mb-1">最弱宮位</div>
+              <div className="font-semibold">
+                {PALACE_SYMBOLISM[overallPattern.weakest].name}
+                （{PALACE_SYMBOLISM[overallPattern.weakest].element}）
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAnalysisProps) {
   const [mode, setMode] = useState<AnalysisMode>('basic');
   const [view, setView] = useState<AnalysisView>('overall');
@@ -281,12 +428,13 @@ export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAn
           <Tabs value={view} onValueChange={(v: string) => setView(v as AnalysisView)}>
             <TabsList className={cn(
               "grid w-full",
-              mode === 'advanced' ? 'grid-cols-6' : 'grid-cols-4'
+              mode === 'advanced' ? 'grid-cols-7' : 'grid-cols-5'
             )}>
               <TabsTrigger value="overall">全局大勢</TabsTrigger>
               <TabsTrigger value="palaces">九宮解說</TabsTrigger>
               <TabsTrigger value="matters">事項分類</TabsTrigger>
               <TabsTrigger value="god">用神分析</TabsTrigger>
+              <TabsTrigger value="kz">生剋關係</TabsTrigger>
               {mode === 'advanced' && (
                 <>
                   <TabsTrigger value="qiyi">三奇六儀</TabsTrigger>
@@ -505,6 +653,16 @@ export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAn
             plate={plate} 
             matterType={matterType} 
             liuqin={liuqin}
+            mode={mode}
+          />
+        )}
+
+        {/* 生剋關係視圖 */}
+        {view === 'kz' && (
+          <PalaceRelationView 
+            plate={plate} 
+            mainPalace={mainPalace}
+            matterType={matterType}
             mode={mode}
           />
         )}
