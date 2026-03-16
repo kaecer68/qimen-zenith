@@ -1,29 +1,22 @@
 /**
  * GET /api/cases?id=xxx&tag=xxx&type=xxx&search=xxx
- * 
- * 案例分析庫 API
- * 提供經典案例查詢
+ *
+ * 案例分析庫 API — proxies to Go gRPC backend.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  CASE_STUDIES, 
-  getCaseStudyById, 
-  getAllCaseTags,
-  getCaseStudiesByTag,
-  getCaseStudiesByMatterType 
-} from '@/lib/qimen/caseStudies';
-import { MatterType } from '@/lib/qimen/symbolism';
+import { qimenClient, MatterTypeProto } from '@/lib/grpc-client';
+import { normalizeCase } from '@/lib/grpc-normalize';
 
 /**
  * GET /api/cases
- * 
+ *
  * Query Parameters:
  *   - id: 案例 ID（選填）
  *   - tag: 標籤篩選（選填）
  *   - type: 問事類型篩選（選填）
  *   - search: 關鍵字搜尋（選填）
- * 
+ *
  * Response: CaseStudy | CaseStudy[]
  */
 export async function GET(request: NextRequest) {
@@ -31,57 +24,38 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const tag = searchParams.get('tag');
-    const type = searchParams.get('type') as MatterType | null;
+    const type = searchParams.get('type');
     const search = searchParams.get('search');
 
-    // 根據 ID 查詢單一案例
-    if (id) {
-      const caseStudy = getCaseStudyById(id);
-      if (!caseStudy) {
-        return NextResponse.json(
-          { error: '案例不存在', code: 'CASE_NOT_FOUND' },
-          { status: 404 }
-        );
-      }
+    const req: Record<string, unknown> = {};
+    if (id) req.case_id = id;
+    if (tag) req.tag = tag;
+    if (type && MatterTypeProto[type]) req.matter_type = MatterTypeProto[type];
+    if (search) req.search = search;
 
+    const res = await qimenClient.getCases(req);
+
+    if (!res.success) {
+      const status = (res.error_code === 'CASE_NOT_FOUND') ? 404 : 500;
+      return NextResponse.json({ error: res.error, code: res.error_code }, { status });
+    }
+
+    const cases = (res.cases ?? []).map(normalizeCase);
+
+    if (id) {
       return NextResponse.json({
         success: true,
-        data: caseStudy,
-        meta: {
-          timestamp: new Date().toISOString(),
-        },
+        data: cases[0] ?? null,
+        meta: { timestamp: new Date().toISOString() },
       });
-    }
-
-    let results = [...CASE_STUDIES];
-
-    // 標籤篩選
-    if (tag) {
-      results = results.filter(c => c.tags.includes(tag));
-    }
-
-    // 問事類型篩選
-    if (type) {
-      results = results.filter(c => c.matterType === type);
-    }
-
-    // 關鍵字搜尋
-    if (search) {
-      const lowerSearch = search.toLowerCase();
-      results = results.filter(c => 
-        c.title.includes(search) ||
-        c.description.includes(search) ||
-        c.question.includes(search) ||
-        c.tags.some(t => t.includes(search))
-      );
     }
 
     return NextResponse.json({
       success: true,
-      data: results,
+      data: cases,
       meta: {
-        count: results.length,
-        total: CASE_STUDIES.length,
+        count: cases.length,
+        total: res.total ?? cases.length,
         filters: { tag, type, search },
         timestamp: new Date().toISOString(),
       },

@@ -14,6 +14,8 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js 16">
   <img src="https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript" alt="TypeScript 5">
+  <img src="https://img.shields.io/badge/Go-1.22-00ADD8?style=flat-square&logo=go" alt="Go 1.22">
+  <img src="https://img.shields.io/badge/gRPC-protobuf-244c5a?style=flat-square&logo=grpc" alt="gRPC">
   <img src="https://img.shields.io/badge/Tailwind-4-38B2AC?style=flat-square&logo=tailwind-css" alt="Tailwind CSS 4">
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT">
 </p>
@@ -53,29 +55,41 @@
 
 ```
 qimen-zenith/
+├── cmd/server/           # Go gRPC 伺服器入口
+│   └── main.go
+├── internal/handler/     # gRPC Handler 實作
+│   └── handler.go
+├── pkg/
+│   ├── qimen/            # 奇門核心演算法（Go）
+│   │   ├── core.go       # 排盤計算、評分、分析
+│   │   ├── hour_pillar.go # 時柱計算（五鼠遁元法）
+│   │   ├── knowledge.go  # 三奇六儀 + 門星神知識庫
+│   │   └── staticdata.go # 教學/案例/格局靜態資料
+│   └── lunarapi/         # Lunar-Zenith HTTP 客戶端
+│       └── lunar.go
+├── proto/
+│   ├── qimen.proto       # gRPC Protobuf 定義
+│   ├── qimen.pb.go       # 自動生成
+│   └── qimen_grpc.pb.go  # 自動生成
 ├── src/
 │   ├── app/              # Next.js App Router
 │   ├── components/        # React 元件
 │   │   ├── qimen/        # 奇門相關元件
 │   │   └── ui/           # UI 元件（shadcn/ui）
 │   └── lib/
-│       ├── qimen/        # 奇門核心演算法
-│       │   ├── core.ts   # 排盤計算
-│       │   ├── hourPillar.ts  # 時柱本地計算（五鼠遁元法）
-│       │   ├── serialize.ts   # API 序列化工具
-│       │   ├── qiyiKnowledge.ts    # 三奇六儀知識庫
-│       │   ├── combinationKnowledge.ts  # 門星神組合知識庫
-│       │   ├── matterAnalysis.ts    # 用神分析
-│       │   ├── palaceRelation.ts    # 宮位生剋
-│       │   ├── spacetimeAnalysis.ts # 時空分析
-│       │   ├── teaching.ts          # 基礎教學內容
-│       │   ├── caseStudies.ts       # 案例庫
-│       │   └── patterns.ts          # 格局資料
-│       └── utils.ts      # 工具函數
-├── proto/
-│   └── qimen.proto       # gRPC Protobuf 定義
-├── public/               # 靜態資源
-└── docs/                 # 文件
+│       ├── grpc-client.ts    # TypeScript gRPC 客戶端
+│       ├── grpc-normalize.ts # gRPC 回應正規化
+│       ├── qimen/        # TypeScript 輔助函式
+│       └── utils.ts
+├── go.mod
+├── Makefile
+└── package.json
+```
+
+### 服務關係
+
+```
+瀏覽器 → Next.js (3000) → [REST API routes] → Go gRPC server (50051) → Lunar-Zenith (8080)
 ```
 
 ---
@@ -149,13 +163,15 @@ curl http://localhost:3000/api/qimen/analysis?date=2026-03-16&hour=9&mode=enhanc
 curl http://localhost:3000/api/qimen/health
 ```
 
-> **注意**：排盤與分析 API 依賴 [lunar-zenith](https://github.com/kaecer68/lunar-zenith) 曆法服務，請確保該服務已啟動。
+> **注意**：API 依賴兩個外部服務：
+> 1. **Go gRPC 後端**（`go run ./cmd/server/`，port 50051）
+> 2. **lunar-zenith 曆法服務**（port 8080，參見 [lunar-zenith](https://github.com/kaecer68/lunar-zenith)）
 
 ---
 
-## gRPC 服務
+## gRPC 服務（Go 後端）
 
-本專案同時提供 gRPC 服務（port 50051），支援高效能的跨語言調用。
+核心算法已遷移至 **Go** 實作，提供高效能的 gRPC 服務（port 50051）。Next.js REST API 作為代理層，將所有計算請求轉發至 Go 後端。
 
 ### 服務列表
 
@@ -163,16 +179,32 @@ curl http://localhost:3000/api/qimen/health
 |-----|------|
 | `CalculatePlate` | 排盤計算 |
 | `AnalyzePlate` | 解盤分析 |
-| `AnalyzeEnhanced` | 增強分析 |
+| `AnalyzeEnhanced` | 增強分析（含三奇六儀 + 門星神） |
 | `GetTeachingSections` | 教學內容 |
 | `GetCases` | 案例分析 |
 | `GetPatterns` | 格局查詢 |
 | `Health` | 健康檢查 |
 
-### 啟動 gRPC 服務器
+### 啟動 Go gRPC 伺服器
 
 ```bash
-npx ts-node src/server/grpc.ts
+# 方法一：直接執行
+go run ./cmd/server/
+
+# 方法二：編譯後執行
+make build
+./bin/server
+
+# 環境變數
+GRPC_PORT=50051   # gRPC 監聽埠（預設 50051）
+GRPC_HOST=localhost:50051  # Next.js 連線位址（預設 localhost:50051）
+LUNAR_API_URL=http://localhost:8080  # Lunar-Zenith 服務位址
+```
+
+### 重新生成 Proto
+
+```bash
+make proto
 ```
 
 ---
@@ -181,7 +213,8 @@ npx ts-node src/server/grpc.ts
 
 ### 環境需求
 - Node.js 18+
-- npm / yarn / pnpm
+- Go 1.22+
+- protoc + protoc-gen-go（僅重新生成 proto 時需要）
 
 ### 安裝
 
@@ -190,10 +223,23 @@ npx ts-node src/server/grpc.ts
 git clone https://github.com/kaecer/qimen-zenith.git
 cd qimen-zenith
 
-# 安裝依賴
+# 安裝 Node 依賴
 npm install
 
-# 啟動開發伺服器
+# 安裝 Go 依賴
+go mod tidy
+```
+
+### 啟動（完整服務）
+
+```bash
+# 終端 1：啟動 Go gRPC 後端
+go run ./cmd/server/
+
+# 終端 2：啟動 lunar-zenith 曆法服務
+# （參見 https://github.com/kaecer68/lunar-zenith）
+
+# 終端 3：啟動 Next.js 前端
 npm run dev
 ```
 
@@ -202,6 +248,10 @@ npm run dev
 ### 建置
 
 ```bash
+# 建置 Go 伺服器
+make build          # 輸出 bin/server
+
+# 建置 Next.js
 npm run build
 ```
 

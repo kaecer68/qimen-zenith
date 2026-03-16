@@ -1,21 +1,18 @@
 /**
  * GET /api/qimen/plate?date=YYYY-MM-DD&hour=0-23
- * 
- * 奇門遁甲排盤 API
- * 根據指定日期與時辰計算完整的奇門盤
- * 
+ *
+ * 奇門遁甲排盤 API — proxies to Go gRPC backend.
+ *
  * Query Parameters:
  *   - date: 日期，格式 YYYY-MM-DD（選填，預設今天）
- *   - hour: 小時數 0-23（選填，預設當前小時）→ 本地計算時柱
- * 
+ *   - hour: 小時數 0-23（選填，預設當前小時）
+ *
  * Response: QimenPlateJSON
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getLunarData } from '@/lib/lunar-api';
-import { calculateDailyQimen } from '@/lib/qimen/core';
-import { serializePlate } from '@/lib/qimen/serialize';
-import { calculateHourPillar, isEarlyZiHour } from '@/lib/qimen/hourPillar';
+import { qimenClient } from '@/lib/grpc-client';
+import { normalizePlate } from '@/lib/grpc-normalize';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,93 +20,55 @@ export async function GET(request: NextRequest) {
     const dateParam = searchParams.get('date');
     const hourParam = searchParams.get('hour');
 
-    // 時辰參數驗證
     const now = new Date();
-    let hour: number | undefined;
+    let hour = now.getHours();
     if (hourParam !== null) {
-      hour = parseInt(hourParam, 10);
-      if (isNaN(hour) || hour < 0 || hour > 23) {
+      const parsed = parseInt(hourParam, 10);
+      if (isNaN(parsed) || parsed < 0 || parsed > 23) {
         return NextResponse.json(
           { error: 'hour 參數無效，請使用 0-23', code: 'INVALID_HOUR' },
           { status: 400 }
         );
       }
-    } else {
-      hour = now.getHours();
+      hour = parsed;
     }
 
-    // 日期驗證
     const dateStr = dateParam || now.toISOString().split('T')[0];
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(dateStr)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
       return NextResponse.json(
         { error: '日期格式錯誤，請使用 YYYY-MM-DD 格式', code: 'INVALID_DATE' },
         { status: 400 }
       );
     }
 
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) {
+    const res = await qimenClient.calculatePlate({ date: dateStr, hour });
+
+    if (!res.success) {
+      const isLunar = (res.error_code || '').includes('LUNAR');
       return NextResponse.json(
-        { error: '無效的日期', code: 'INVALID_DATE' },
-        { status: 400 }
+        { error: res.error, code: res.error_code },
+        { status: isLunar ? 503 : 500 }
       );
     }
 
-    // 處理早子時（23:00-23:59 屬於下一天的子時）
-    let queryDate = dateStr;
-    if (hour !== undefined && isEarlyZiHour(hour)) {
-      const nextDay = new Date(dateStr);
-      nextDay.setDate(nextDay.getDate() + 1);
-      queryDate = nextDay.toISOString().split('T')[0];
-    }
-
-    // 從 lunar-zenith 獲取曆法數據
-    const lunarData = await getLunarData(queryDate);
-
-    // 本地計算時柱（五鼠遁元法）
-    const dayStem = lunarData.pillars.day.charAt(0);
-    const hourGanZhi = hour !== undefined
-      ? calculateHourPillar(dayStem, hour)
-      : lunarData.pillars.hour;
-
-    // 計算奇門盤
-    const plate = calculateDailyQimen(
-      date,
-      lunarData.pillars.year,
-      lunarData.pillars.month,
-      lunarData.pillars.day,
-      hourGanZhi,
-      lunarData.solar_term.name,
-      lunarData.solar_term.index,
-      hour
-    );
-
-    // 序列化並回傳
-    const result = serializePlate(plate);
-
     return NextResponse.json({
       success: true,
-      data: result,
+      data: normalizePlate(res.plate),
       meta: {
-        timestamp: new Date().toISOString(),
-        version: '1.0.0',
+        timestamp: res.meta?.timestamp ?? new Date().toISOString(),
+        version: res.meta?.version ?? '1.0.0',
       },
     });
   } catch (error) {
     console.error('[API] /api/qimen/plate error:', error);
-
     const message = error instanceof Error ? error.message : '排盤計算失敗';
-    const isLunarError = message.includes('lunar') || message.includes('fetch');
-
+    const isLunar = message.includes('lunar') || message.includes('connect');
     return NextResponse.json(
       {
-        error: isLunarError
-          ? '無法連接曆法服務 (lunar-zenith)，請確認服務已啟動'
-          : message,
-        code: isLunarError ? 'LUNAR_SERVICE_UNAVAILABLE' : 'CALCULATION_ERROR',
+        error: isLunar ? '無法連接 Go 後端服務，請確認服務已啟動' : message,
+        code: isLunar ? 'BACKEND_UNAVAILABLE' : 'CALCULATION_ERROR',
       },
-      { status: isLunarError ? 503 : 500 }
+      { status: isLunar ? 503 : 500 }
     );
   }
 }

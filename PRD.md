@@ -1,9 +1,9 @@
 # 奇門遁甲專案產品需求文件 (PRD)
 
 ## 版本資訊
-- **版本**: v1.0.0
+- **版本**: v2.0.0
 - **建立日期**: 2026-03-16
-- **最後更新**: 2026-03-16
+- **最後更新**: 2026-03-17
 - **專案名稱**: 奇門遁甲 · Qimen Zenith
 - **目標用戶**: 專業命理師、奇門遁甲愛好者
 - **產品形式**: 網頁應用程式 (Web App) + REST/gRPC API 服務
@@ -34,37 +34,45 @@
 | 圖標 | Lucide React | 0.577.0 | 現代化圖標庫 |
 
 ### 2.2 後端/外部服務
-| 服務 | 說明 | 地址 |
-|------|------|------|
-| Next.js App | 前端與 REST API | http://localhost:3000 |
-| lunar-zenith | 曆法計算服務 | http://localhost:8080 |
-| gRPC Server | 高性能 RPC 服務 | localhost:50051 |
+| 服務 | 語言 | 說明 | 地址 |
+|------|------|------|------|
+| Next.js App | TypeScript | 前端 + REST API 代理層 | http://localhost:3000 |
+| Go gRPC Server | **Go 1.22** | 奇門核心算法服務 | localhost:50051 |
+| lunar-zenith | — | 曆法計算服務 | http://localhost:8080 |
+
+> **架構說明**: 瀏覽器 → Next.js REST API → Go gRPC backend → Lunar-Zenith
 
 ### 2.3 專案結構
 ```
-src/
-├── app/
-│   ├── api/qimen/          # REST API
-│   │   ├── plate/route.ts
-│   │   ├── analysis/route.ts
-│   │   └── health/route.ts
-│   ├── page.tsx
-│   └── layout.tsx
-├── components/qimen/
-│   ├── QimenCalculator.tsx   # 含問事類型/六親選擇
-│   ├── QimenBoard.tsx      # 含主事宮位高亮
-│   └── QimenAnalysis.tsx   # 含九宮多維象徵
-├── lib/qimen/
-│   ├── core.ts
-│   ├── hourPillar.ts       # 五鼠遁元法
-│   ├── symbolism.ts        # 九宮象徵+六親+問事類型
-│   ├── qiyiKnowledge.ts
-│   └── combinationKnowledge.ts
-├── server/
-│   └── grpc-server.ts      # gRPC 服務實現
+qimen-zenith/
+├── cmd/server/main.go          # Go gRPC 伺服器入口
+├── internal/handler/handler.go # gRPC Handler（7 RPCs）
+├── pkg/
+│   ├── qimen/
+│   │   ├── core.go             # 九宮排盤、評分、分析
+│   │   ├── hour_pillar.go      # 時柱（五鼠遁元法）
+│   │   ├── knowledge.go        # 三奇六儀 + 門星神知識庫
+│   │   └── staticdata.go       # 教學/案例/格局靜態資料
+│   └── lunarapi/lunar.go       # Lunar-Zenith HTTP 客戶端
 ├── proto/
-│   └── qimen.proto         # gRPC 協議定義
-└── lib/lunar-api.ts
+│   ├── qimen.proto             # gRPC Protobuf 定義
+│   ├── qimen.pb.go             # 自動生成
+│   └── qimen_grpc.pb.go        # 自動生成
+├── src/
+│   ├── app/api/                # Next.js REST API 代理層
+│   │   ├── qimen/plate/        # → CalculatePlate
+│   │   ├── qimen/analysis/     # → AnalyzePlate / AnalyzeEnhanced
+│   │   ├── qimen/health/       # → Health
+│   │   ├── cases/              # → GetCases
+│   │   ├── patterns/           # → GetPatterns
+│   │   └── teaching/sections/  # → GetTeachingSections
+│   ├── components/qimen/       # React UI 元件
+│   └── lib/
+│       ├── grpc-client.ts      # TypeScript gRPC 客戶端
+│       └── grpc-normalize.ts   # gRPC 回應正規化（snake→camel）
+├── go.mod
+├── Makefile
+└── package.json
 ```
 
 ---
@@ -110,11 +118,13 @@ src/
 - 端點: `/qimen/plate`, `/qimen/analysis`
 - 支持參數: date, hour, mode
 
-#### 3.2.2 gRPC API
+#### 3.2.2 gRPC API（Go 後端）
 - 地址: `localhost:50051`
-- 服務: QimenService
-- 方法: CalculatePlate, AnalyzePlate, AnalyzeEnhanced, Health
+- 服務: `QimenService`
+- 實作語言: **Go 1.22**
+- 方法: CalculatePlate, AnalyzePlate, AnalyzeEnhanced, GetTeachingSections, GetCases, GetPatterns, Health
 - Proto 文件: `proto/qimen.proto`
+- 啟動: `go run ./cmd/server/`
 
 ### 3.3 未來功能規劃
 
@@ -325,8 +335,8 @@ GET /api/qimen/health
 
 回應：
   - status: "ok" | "degraded"
-  - version: "1.0.0"
-  - services: { qimen, lunar }
+  - version: "2.0.0"
+  - services: { goBackend: { status, message? } }
 ```
 
 ### 7.4 錯誤處理
@@ -339,6 +349,25 @@ GET /api/qimen/health
 ## 8. 開發里程碑
 
 ### 8.1 已完成 ✅
+
+#### v2.0.0 (2026-03-17) - Go 後端遷移
+- [x] **Go 專案骨架** (`go.mod`, `Makefile`)
+  - Go 模組 `github.com/kaecer/qimen-zenith`
+  - `make proto / build / run / tidy`
+- [x] **核心算法移植至 Go**
+  - `pkg/qimen/core.go` — 九宮排盤、評分、分析
+  - `pkg/qimen/hour_pillar.go` — 時柱（五鼠遁元法）
+  - `pkg/qimen/knowledge.go` — 三奇六儀 + 門星神知識庫
+  - `pkg/qimen/staticdata.go` — 教學/案例/格局靜態資料
+  - `pkg/lunarapi/lunar.go` — Lunar-Zenith HTTP 客戶端
+- [x] **gRPC 服務實作**
+  - `internal/handler/handler.go` — 7 個 RPC handlers
+  - `cmd/server/main.go` — gRPC server entry (port 50051)
+  - Proto Go code 自動生成並驗證編譯
+- [x] **Next.js 前端更新**
+  - `src/lib/grpc-client.ts` — TypeScript gRPC 客戶端
+  - `src/lib/grpc-normalize.ts` — snake_case → camelCase 正規化
+  - 6 個 REST API routes 改為代理 Go 後端
 
 #### v1.1.0 (2026-03-16) - API 服務增強
 - [x] **時柱/時辰系統** (`hourPillar.ts`)
@@ -461,6 +490,7 @@ GET /api/qimen/health
 
 | 版本 | 日期 | 變更內容 | 作者 |
 |------|------|---------|------|
+| v2.0.0 | 2026-03-17 | Go 後端遷移：核心算法移植至 Go，gRPC Handler，Next.js 代理層 | Cascade |
 | v1.3.0 | 2026-03-16 | Phase 6 完成：教學系統（基礎教學、案例分析、格局查詢） | Cascade |
 | v1.2.0 | 2026-03-16 | Phase 4+5 完成：用神分析、生剋關係、時空分析、記錄管理、匯出功能 | Cascade |
 | v1.0.0 | 2026-03-16 | 開源發布：三奇六儀/門星神知識庫、進階分析模式、專業文件 | Cascade |
