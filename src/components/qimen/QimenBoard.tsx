@@ -3,18 +3,39 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { QimenPlate, PALACES, DOORS, STARS } from '@/lib/qimen/core';
+import { MatterType, LIUQIN_RELATIONS, PALACE_SYMBOLISM, getMatterPalace, MATTER_CONFIG } from '@/lib/qimen/symbolism';
 
 interface QimenBoardProps {
   plate: QimenPlate;
+  matterType?: MatterType;
+  liuqin?: string;
 }
 
-export function QimenBoard({ plate }: QimenBoardProps) {
+export function QimenBoard({ plate, matterType = 'general', liuqin }: QimenBoardProps) {
   // 將 Map 轉換為易用的對象
   const heavenPlate = Object.fromEntries(plate.heavenPlate);
   const humanPlate = Object.fromEntries(plate.humanPlate);
   const spiritPlate = Object.fromEntries(plate.spiritPlate);
   const starsPlate = Object.fromEntries(plate.starsPlate);
   const earthPlate = Object.fromEntries(plate.earthPlate);
+
+  // 計算主事宮位（根據問事類型）
+  const getMainPalace = (): number => {
+    if (matterType === 'general') return 5; // 一般綜合以中宮為主
+    
+    const matterPalace = getMatterPalace(matterType, { humanPlate, starsPlate });
+    if (matterPalace.palace > 0) return matterPalace.palace;
+    
+    // 如果有六親，使用六親對應宮位
+    if (liuqin) {
+      const relation = LIUQIN_RELATIONS.find(r => r.key === liuqin);
+      if (relation) return relation.palace;
+    }
+    
+    return 5;
+  };
+
+  const mainPalace = getMainPalace();
 
   // 九宮格順序（按洛書數順序排列，用於正確顯示九宮格）
   const palaceOrder = [4, 9, 2, 3, 5, 7, 8, 1, 6];
@@ -31,9 +52,13 @@ export function QimenBoard({ plate }: QimenBoardProps) {
             <span className="ml-1 text-primary font-medium">（{plate.shichen}）</span>
           )}
         </div>
-        <div className="text-lg font-medium text-primary">
-          {plate.solarTerm} · {plate.yinYang} · {plate.juNumber}局
-        </div>
+          {matterType !== 'general' && (
+            <div className="text-sm text-amber-600 font-medium">
+              問：{MATTER_CONFIG[matterType].name}
+              {liuqin && ` · ${LIUQIN_RELATIONS.find(r => r.key === liuqin)?.name}`}
+              {mainPalace !== 5 && ` · 主事：${PALACE_SYMBOLISM[mainPalace]?.name}`}
+            </div>
+          )}
       </CardHeader>
       <CardContent className="p-4">
         {/* 九宮格布局 */}
@@ -50,12 +75,16 @@ export function QimenBoard({ plate }: QimenBoardProps) {
                 className={cn(
                   "aspect-square border-2 rounded-lg p-3 flex flex-col items-center justify-center text-center min-h-[180px] md:min-h-[220px]",
                   isCenter && "bg-primary/10 border-primary",
-                  !isCenter && "border-border bg-card"
+                  !isCenter && "border-border bg-card",
+                  palaceIndex === mainPalace && "bg-amber-100 border-amber-400 dark:bg-amber-900/30 dark:border-amber-600"
                 )}
               >
                 {/* 宮位名稱和數字 */}
                 <div className="text-base font-bold text-muted-foreground mb-1">
                   {palace.name}
+                  {palaceIndex === mainPalace && (
+                    <span className="ml-1 text-amber-600 text-xs">★主</span>
+                  )}
                 </div>
 
                 {/* 九星 */}

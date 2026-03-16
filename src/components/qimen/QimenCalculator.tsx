@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,14 +10,18 @@ import { QimenAnalysis } from '@/components/qimen/QimenAnalysis';
 import { getLunarData } from '@/lib/lunar-api';
 import { calculateDailyQimen, QimenPlate } from '@/lib/qimen/core';
 import { SHICHEN, calculateHourPillar, getShichenIndex, isEarlyZiHour } from '@/lib/qimen/hourPillar';
+import { PALACE_SYMBOLISM, LIUQIN_RELATIONS, MatterType, getMatterPalace, getLiuqinDescription, needsLiuqin, getApplicableLiuqin, MATTER_CONFIG } from '@/lib/qimen/symbolism';
 
 export function QimenCalculator() {
   const now = new Date();
   const [date, setDate] = useState(now.toISOString().split('T')[0]);
   const [hour, setHour] = useState(now.getHours());
+  const [matterType, setMatterType] = useState<MatterType>('general');
+  const [liuqin, setLiuqin] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [plate, setPlate] = useState<QimenPlate | null>(null);
+  const [isAutoCalc, setIsAutoCalc] = useState(false);
 
   // 自動更新當前時辰顯示
   const currentShichenIndex = getShichenIndex(hour);
@@ -30,7 +34,7 @@ export function QimenCalculator() {
     setHour(n.getHours());
   };
 
-  const handleCalculate = async () => {
+  const handleCalculate = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -68,6 +72,26 @@ export function QimenCalculator() {
     } finally {
       setLoading(false);
     }
+  }, [date, hour]);
+
+  // 當時間參數改變且已有排盤結果時，自動重新計算
+  useEffect(() => {
+    if (plate && isAutoCalc) {
+      handleCalculate();
+    }
+  }, [hour, handleCalculate, plate, isAutoCalc]);
+
+  // 當日期改變時，自動重新計算（如果已有結果）
+  useEffect(() => {
+    if (plate && isAutoCalc) {
+      handleCalculate();
+    }
+  }, [date, handleCalculate, plate, isAutoCalc]);
+
+  // 首次排盤後啟用自動計算
+  const handleFirstCalculate = async () => {
+    await handleCalculate();
+    setIsAutoCalc(true);
   };
 
   return (
@@ -115,7 +139,55 @@ export function QimenCalculator() {
             </div>
           </div>
 
-          {/* 操作按鈕 */}
+          {/* 問事類型選擇 */}
+          <div className="grid gap-2">
+            <Label htmlFor="matter">問事類型</Label>
+            <select
+              id="matter"
+              value={matterType}
+              onChange={(e) => {
+                setMatterType(e.target.value as MatterType);
+                setLiuqin(''); // 重置六親選擇
+              }}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {Object.entries(MATTER_CONFIG).map(([key, config]: [string, typeof MATTER_CONFIG[MatterType]]) => (
+                <option key={key} value={key}>
+                  {config.name} - {config.description}
+                </option>
+              ))}
+            </select>
+            {matterType !== 'general' && (
+              <div className="text-xs text-muted-foreground">
+                用神：{getMatterPalace(matterType).description}
+              </div>
+            )}
+          </div>
+
+          {/* 六親關係選擇（僅當問事類型需要時顯示） */}
+          {needsLiuqin(matterType) && (
+            <div className="grid gap-2">
+              <Label htmlFor="liuqin">對方身份（六親）</Label>
+              <select
+                id="liuqin"
+                value={liuqin}
+                onChange={(e) => setLiuqin(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">請選擇對方身份...</option>
+                {getApplicableLiuqin(matterType).map((relation: typeof LIUQIN_RELATIONS[number]) => (
+                  <option key={relation.key} value={relation.key}>
+                    {relation.name}（{relation.palaceName}）- {relation.description.split('、')[0]}
+                  </option>
+                ))}
+              </select>
+              {liuqin && (
+                <div className="text-xs text-amber-600">
+                  {getLiuqinDescription(liuqin)}
+                </div>
+              )}
+            </div>
+          )}
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -125,7 +197,7 @@ export function QimenCalculator() {
               當前時刻
             </Button>
             <Button 
-              onClick={handleCalculate}
+              onClick={handleFirstCalculate}
               disabled={loading}
               className="flex-1"
             >
@@ -147,8 +219,16 @@ export function QimenCalculator() {
 
       {plate && (
         <>
-          <QimenBoard plate={plate} />
-          <QimenAnalysis plate={plate} />
+          <QimenBoard 
+            plate={plate} 
+            matterType={matterType}
+            liuqin={liuqin}
+          />
+          <QimenAnalysis 
+            plate={plate} 
+            matterType={matterType}
+            liuqin={liuqin}
+          />
         </>
       )}
     </div>

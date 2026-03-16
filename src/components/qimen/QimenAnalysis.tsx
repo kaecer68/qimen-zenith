@@ -13,20 +13,46 @@ import {
   analyzePalaceEnhanced,
   EnhancedPalaceRating,
 } from '@/lib/qimen/core';
+import { 
+  MatterType, 
+  LIUQIN_RELATIONS, 
+  PALACE_SYMBOLISM, 
+  getMatterPalace,
+  MATTER_CONFIG 
+} from '@/lib/qimen/symbolism';
 
 interface QimenAnalysisProps {
   plate: QimenPlate;
+  matterType?: MatterType;
+  liuqin?: string;
 }
 
 type AnalysisMode = 'basic' | 'advanced';
 type AnalysisView = 'palaces' | 'matters' | 'overall' | 'qiyi' | 'combinations';
 
-export function QimenAnalysis({ plate }: QimenAnalysisProps) {
+export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAnalysisProps) {
   const [mode, setMode] = useState<AnalysisMode>('basic');
   const [view, setView] = useState<AnalysisView>('overall');
 
   const analysis = generateQimenAnalysis(plate);
   const palaceRatings = Object.fromEntries(analysis.palaceRatings);
+
+  // 計算主事宮位
+  const getMainPalace = (): number => {
+    if (matterType === 'general') return 5;
+    const humanPlate = Object.fromEntries(plate.humanPlate);
+    const starsPlate = Object.fromEntries(plate.starsPlate);
+    const matterPalace = getMatterPalace(matterType, { humanPlate, starsPlate });
+    if (matterPalace.palace > 0) return matterPalace.palace;
+    if (liuqin) {
+      const relation = LIUQIN_RELATIONS.find(r => r.key === liuqin);
+      if (relation) return relation.palace;
+    }
+    return 5;
+  };
+
+  const mainPalace = getMainPalace();
+  const mainPalaceInfo = PALACE_SYMBOLISM[mainPalace];
 
   // 吉凶等級樣式
   const getLevelStyles = (level: PalaceRating['level']) => {
@@ -154,14 +180,16 @@ export function QimenAnalysis({ plate }: QimenAnalysisProps) {
             {palaceOrder.map((index) => {
               const rating = palaceRatings[index];
               const palace = PALACES.find(p => p.index === index);
-              if (!rating) return null;
+              const symbolism = PALACE_SYMBOLISM[index];
+              if (!rating || !symbolism) return null;
 
               return (
                 <div
                   key={index}
                   className={cn(
                     "p-4 rounded-lg border",
-                    mode === 'advanced' ? 'space-y-3' : 'flex items-center justify-between'
+                    mode === 'advanced' ? 'space-y-3' : 'flex items-center justify-between',
+                    index === mainPalace && 'bg-amber-50 border-amber-300 dark:bg-amber-900/20 dark:border-amber-700'
                   )}
                 >
                   <div className={cn("flex items-center gap-3", mode === 'advanced' ? 'border-b pb-3' : '')}>
@@ -173,6 +201,9 @@ export function QimenAnalysis({ plate }: QimenAnalysisProps) {
                     </Badge>
                     <div>
                       <span className="font-semibold">{palace?.name}</span>
+                      {index === mainPalace && (
+                        <span className="ml-2 text-amber-600 text-sm font-medium">★ 主事宮位</span>
+                      )}
                       {mode === 'basic' && (
                         <span className="text-sm text-muted-foreground ml-2">
                           {palace?.direction} · {palace?.element}
@@ -190,10 +221,36 @@ export function QimenAnalysis({ plate }: QimenAnalysisProps) {
                     </p>
                     
                     {mode === 'advanced' && (
-                      <div className="mt-2 text-sm">
-                        <span className="text-muted-foreground">宮位五行：{palace?.element} · </span>
-                        <span className="text-muted-foreground">方位：{palace?.direction} · </span>
-                        <span className="text-muted-foreground">評分：{rating.score}/100</span>
+                      <div className="mt-3 space-y-2 text-sm">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="bg-muted/50 p-2 rounded">
+                            <span className="font-medium text-muted-foreground">方位：</span>
+                            {symbolism.direction}（{symbolism.trigram}）
+                          </div>
+                          <div className="bg-muted/50 p-2 rounded">
+                            <span className="font-medium text-muted-foreground">五行：</span>
+                            {symbolism.element}
+                          </div>
+                        </div>
+                        <div className="bg-muted/50 p-2 rounded">
+                          <span className="font-medium text-muted-foreground">人事：</span>
+                          {symbolism.person}
+                        </div>
+                        <div className="bg-muted/50 p-2 rounded">
+                          <span className="font-medium text-muted-foreground">身體：</span>
+                          {symbolism.bodyPart}
+                        </div>
+                        <div className="bg-muted/50 p-2 rounded">
+                          <span className="font-medium text-muted-foreground">宜：</span>
+                          {symbolism.suitable.join('、')}
+                        </div>
+                        <div className="bg-muted/50 p-2 rounded">
+                          <span className="font-medium text-muted-foreground">忌：</span>
+                          {symbolism.unsuitable.join('、')}
+                        </div>
+                        <div className="text-right text-muted-foreground text-xs">
+                          評分：{rating.score}/100 · {symbolism.time}
+                        </div>
                       </div>
                     )}
                   </div>

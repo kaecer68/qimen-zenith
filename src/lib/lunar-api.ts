@@ -3,6 +3,48 @@
  * 用於獲取曆法基礎數據
  */
 
+// lunar-zenith 返回的四柱結構（天干地支索引）
+interface PillarRaw {
+  StemIndex: number;
+  BranchIndex: number;
+}
+
+// lunar-zenith 原始 API 回應
+interface LunarDataRaw {
+  gregorian_date: string;
+  julian_day: number;
+  delta_t: number;
+  lunar: {
+    Year: number;
+    Month: number;
+    Day: number;
+    IsLeap: boolean;
+  };
+  buddhist: string;
+  taoist: string;
+  pillars: {
+    Year: PillarRaw;
+    Month: PillarRaw;
+    Day: PillarRaw;
+    Hour: PillarRaw;
+  };
+  solar_term: {
+    Index: number;
+    Name: string;
+    Longitude: number;
+  };
+  twelve_officer: string;
+  shen_sha: Array<{
+    Name: string;
+    Description: string;
+  }>;
+  holiday_info: {
+    is_holiday: boolean;
+    name: string;
+  };
+}
+
+// 轉換後的標準化數據
 export interface LunarData {
   gregorian_date: string;
   julian_day: number;
@@ -12,7 +54,6 @@ export interface LunarData {
     month: number;
     day: number;
     is_leap: boolean;
-    string_value: string;
   };
   buddhist: string;
   taoist: string;
@@ -38,6 +79,52 @@ export interface LunarData {
   };
 }
 
+// 十天干
+const STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'] as const;
+// 十二地支
+const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'] as const;
+
+/** 將天干地支索引轉為干支字串（如 StemIndex=5, BranchIndex=1 → "己丑"）*/
+function pillarToGanZhi(pillar: PillarRaw): string {
+  const stem = STEMS[pillar.StemIndex] || '?';
+  const branch = BRANCHES[pillar.BranchIndex] || '?';
+  return `${stem}${branch}`;
+}
+
+/** 將 lunar-zenith 原始回應轉為標準化格式 */
+function normalizeLunarData(raw: LunarDataRaw): LunarData {
+  return {
+    gregorian_date: raw.gregorian_date,
+    julian_day: raw.julian_day,
+    delta_t: raw.delta_t,
+    lunar: {
+      year: raw.lunar.Year,
+      month: raw.lunar.Month,
+      day: raw.lunar.Day,
+      is_leap: raw.lunar.IsLeap,
+    },
+    buddhist: raw.buddhist,
+    taoist: raw.taoist,
+    pillars: {
+      year: pillarToGanZhi(raw.pillars.Year),
+      month: pillarToGanZhi(raw.pillars.Month),
+      day: pillarToGanZhi(raw.pillars.Day),
+      hour: pillarToGanZhi(raw.pillars.Hour),
+    },
+    solar_term: {
+      index: raw.solar_term.Index,
+      name: raw.solar_term.Name,
+      longitude: raw.solar_term.Longitude,
+    },
+    twelve_officer: raw.twelve_officer,
+    shen_sha: raw.shen_sha.map(s => ({
+      name: s.Name,
+      description: s.Description,
+    })),
+    holiday_info: raw.holiday_info,
+  };
+}
+
 const LUNAR_API_BASE = process.env.NEXT_PUBLIC_LUNAR_API_URL || '/api/lunar';
 
 /**
@@ -55,7 +142,8 @@ export async function getLunarData(date: string): Promise<LunarData> {
     throw new Error(`Failed to fetch lunar data: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  const raw: LunarDataRaw = await response.json();
+  return normalizeLunarData(raw);
 }
 
 /**
