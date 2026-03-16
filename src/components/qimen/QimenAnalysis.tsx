@@ -22,6 +22,7 @@ import {
 } from '@/lib/qimen/symbolism';
 import { analyzeGod, GodAnalysis } from '@/lib/qimen/godAnalysis';
 import { analyzePalaceKz, analyzeOverallKzPattern, analyzeGodPalaceRelations } from '@/lib/qimen/palaceRelation';
+import { generateSpaceTimeReport } from '@/lib/qimen/spacetimeAnalysis';
 
 interface QimenAnalysisProps {
   plate: QimenPlate;
@@ -30,7 +31,7 @@ interface QimenAnalysisProps {
 }
 
 type AnalysisMode = 'basic' | 'advanced';
-type AnalysisView = 'palaces' | 'matters' | 'overall' | 'qiyi' | 'combinations' | 'god' | 'kz';
+type AnalysisView = 'palaces' | 'matters' | 'overall' | 'qiyi' | 'combinations' | 'god' | 'kz' | 'spacetime';
 
 // 用神分析視圖組件
 function GodAnalysisView({ 
@@ -356,6 +357,175 @@ function PalaceRelationView({
   );
 }
 
+// 時空分析報告視圖組件
+function SpaceTimeReportView({ 
+  plate, 
+  matterType,
+  mode 
+}: { 
+  plate: QimenPlate; 
+  matterType: MatterType;
+  mode: AnalysisMode;
+}) {
+  const report = generateSpaceTimeReport(plate, matterType);
+  
+  const getAuspiciousnessStyles = (level: '吉' | '平' | '凶') => {
+    const styles = {
+      '吉': 'bg-green-100 text-green-800 border-green-200',
+      '平': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      '凶': 'bg-red-100 text-red-800 border-red-200',
+    };
+    return styles[level];
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 時辰分析 */}
+      <div className={cn(
+        "p-4 rounded-lg border",
+        getAuspiciousnessStyles(report.shichen.auspiciousness)
+      )}>
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="font-semibold">時辰分析：{report.shichen.name}</h4>
+          <Badge className={getAuspiciousnessStyles(report.shichen.auspiciousness)}>
+            {report.shichen.auspiciousness}
+          </Badge>
+        </div>
+        <p className="text-sm mb-2">{report.shichen.description}</p>
+        {report.shichen.suitable.length > 0 && (
+          <div className="text-sm">
+            <span className="font-medium">適合：</span>
+            {report.shichen.suitable.join('、')}
+          </div>
+        )}
+      </div>
+
+      {/* 節氣與干支 */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">節氣資訊</h4>
+          <p className="text-sm text-muted-foreground mb-1">{report.solarTerm.description}</p>
+          <div className="flex items-center gap-2 mt-2">
+            <Badge variant="outline">當令：{report.solarTerm.rulingElement}</Badge>
+            <Badge variant="outline">氣運：{report.solarTerm.qiStrength}</Badge>
+          </div>
+        </div>
+
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-2">干支關係</h4>
+          <p className="text-sm text-muted-foreground mb-2">{report.ganZhi.summary}</p>
+          <p className="text-sm">
+            <span className="font-medium">日時關係：</span>
+            {report.ganZhi.dayHourRelation}
+          </p>
+        </div>
+      </div>
+
+      {/* 用神宮位時空評估 */}
+      <div className={cn(
+        "p-4 rounded-lg border",
+        report.godPalaceSpacetime.combinedScore >= 70 
+          ? 'bg-green-50 border-green-200' 
+          : report.godPalaceSpacetime.combinedScore >= 50 
+          ? 'bg-yellow-50 border-yellow-200' 
+          : 'bg-red-50 border-red-200'
+      )}>
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-semibold">
+            {report.godPalaceSpacetime.palaceName}時空評估
+          </h4>
+          <div className="text-right">
+            <div className="text-2xl font-bold">
+              {report.godPalaceSpacetime.combinedScore}分
+            </div>
+            <div className="text-xs text-muted-foreground">
+              時間：{report.godPalaceSpacetime.timeSuitability} · 
+              空間：{report.godPalaceSpacetime.spaceSuitability}
+            </div>
+          </div>
+        </div>
+        <p className="text-sm">{report.godPalaceSpacetime.summary}</p>
+      </div>
+
+      {/* 最佳時辰與方位 */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <h4 className="font-semibold mb-2 text-green-800">✓ 當日最佳時辰</h4>
+          <div className="flex flex-wrap gap-2">
+            {report.bestHours.map((hour, idx) => (
+              <Badge key={idx} className="bg-green-100 text-green-800">
+                {hour}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-semibold mb-2 text-blue-800">→ 最佳方位</h4>
+          <div className="flex flex-wrap gap-2">
+            {report.bestDirections.map((dir, idx) => (
+              <Badge key={idx} className="bg-blue-100 text-blue-800">
+                {dir}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 八方位吉凶 */}
+      {mode === 'advanced' && (
+        <div className="p-4 border rounded-lg">
+          <h4 className="font-semibold mb-3">八方位吉凶分析</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {report.eightDirections.map((dir, idx) => (
+              <div 
+                key={idx}
+                className={cn(
+                  "p-2 rounded text-center text-sm",
+                  getAuspiciousnessStyles(dir.auspiciousness)
+                )}
+              >
+                <div className="font-medium">{dir.direction}（{dir.trigram}）</div>
+                <div className="text-xs">{dir.element} · {dir.auspiciousness}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 綜合建議 */}
+      {report.recommendations.length > 0 && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <h4 className="font-semibold mb-2 text-green-800">綜合建議</h4>
+          <ul className="space-y-1">
+            {report.recommendations.map((rec, idx) => (
+              <li key={idx} className="text-sm text-green-700 flex items-start gap-2">
+                <span>✓</span>
+                {rec}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* 注意事項 */}
+      {report.warnings.length > 0 && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h4 className="font-semibold mb-2 text-red-800">⚠ 注意事項</h4>
+          <ul className="space-y-1">
+            {report.warnings.map((warning, idx) => (
+              <li key={idx} className="text-sm text-red-700 flex items-start gap-2">
+                <span>•</span>
+                {warning}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAnalysisProps) {
   const [mode, setMode] = useState<AnalysisMode>('basic');
   const [view, setView] = useState<AnalysisView>('overall');
@@ -428,13 +598,14 @@ export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAn
           <Tabs value={view} onValueChange={(v: string) => setView(v as AnalysisView)}>
             <TabsList className={cn(
               "grid w-full",
-              mode === 'advanced' ? 'grid-cols-7' : 'grid-cols-5'
+              mode === 'advanced' ? 'grid-cols-8' : 'grid-cols-6'
             )}>
               <TabsTrigger value="overall">全局大勢</TabsTrigger>
               <TabsTrigger value="palaces">九宮解說</TabsTrigger>
               <TabsTrigger value="matters">事項分類</TabsTrigger>
               <TabsTrigger value="god">用神分析</TabsTrigger>
               <TabsTrigger value="kz">生剋關係</TabsTrigger>
+              <TabsTrigger value="spacetime">時空報告</TabsTrigger>
               {mode === 'advanced' && (
                 <>
                   <TabsTrigger value="qiyi">三奇六儀</TabsTrigger>
@@ -662,6 +833,15 @@ export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAn
           <PalaceRelationView 
             plate={plate} 
             mainPalace={mainPalace}
+            matterType={matterType}
+            mode={mode}
+          />
+        )}
+
+        {/* 時空報告視圖 */}
+        {view === 'spacetime' && (
+          <SpaceTimeReportView 
+            plate={plate} 
             matterType={matterType}
             mode={mode}
           />

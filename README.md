@@ -182,7 +182,8 @@ npm run build
 
 ## 關於作者
 
-[德凱/KAECER](https://github.com/kaecer68) - 對傳統文化數位化有興趣的前端工程師
+[德凱/KAECER](https://github.com/kaecer68) 
+- 對傳統文化數位化有興趣的前端工程師
 - Blog: https://goluck.im/
 - Twitter: [@kaecer](https://twitter.com/kaecer)
 
