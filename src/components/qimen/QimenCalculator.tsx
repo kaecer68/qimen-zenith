@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { QimenBoard } from '@/components/qimen/QimenBoard';
 import { QimenAnalysis } from '@/components/qimen/QimenAnalysis';
+import { RecordsManager } from '@/components/qimen/RecordsManager';
 import { getLunarData } from '@/lib/lunar-api';
 import { calculateDailyQimen, QimenPlate } from '@/lib/qimen/core';
 import { SHICHEN, calculateHourPillar, getShichenIndex, isEarlyZiHour } from '@/lib/qimen/hourPillar';
@@ -228,6 +229,11 @@ export function QimenCalculator() {
             plate={plate} 
             matterType={matterType}
             liuqin={liuqin}
+          />
+          <RecordsManager
+            currentPlate={plate}
+            currentMatterType={matterType}
+            currentLiuqin={liuqin}
           />
         </>
       )}
