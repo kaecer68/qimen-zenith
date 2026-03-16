@@ -2502,8 +2502,8 @@ const file_proto_qimen_proto_rawDesc = "" +
 	"\x13GetTeachingSections\x12\x16.qimen.TeachingRequest\x1a\x17.qimen.TeachingResponse\x125\n" +
 	"\bGetCases\x12\x13.qimen.CasesRequest\x1a\x14.qimen.CasesResponse\x12>\n" +
 	"\vGetPatterns\x12\x16.qimen.PatternsRequest\x1a\x17.qimen.PatternsResponse\x125\n" +
-	"\x06Health\x12\x14.qimen.HealthRequest\x1a\x15.qimen.HealthResponseB7\n" +
-	"\x0fcom.qimen.protoZ$github.com/kaecer/qimen-zenith/protob\x06proto3"
+	"\x06Health\x12\x14.qimen.HealthRequest\x1a\x15.qimen.HealthResponseB<\n" +
+	"\x0fcom.qimen.protoZ)github.com/kaecer68/qimen-zenith/v2/protob\x06proto3"
 
 var (
 	file_proto_qimen_proto_rawDescOnce sync.Once

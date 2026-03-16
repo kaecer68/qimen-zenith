@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kaecer/qimen-zenith/pkg/lunarapi"
-	"github.com/kaecer/qimen-zenith/pkg/qimen"
-	pb "github.com/kaecer/qimen-zenith/proto"
+	"github.com/kaecer68/qimen-zenith/v2/pkg/lunarapi"
+	"github.com/kaecer68/qimen-zenith/v2/pkg/qimen"
+	pb "github.com/kaecer68/qimen-zenith/v2/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -454,15 +454,15 @@ func (h *QimenHandler) GetPatterns(ctx context.Context, req *pb.PatternsRequest)
 	var pbPatterns []*pb.QimenPattern
 	for _, p := range patterns {
 		pbPatterns = append(pbPatterns, &pb.QimenPattern{
-			Id:                 p.ID,
-			Name:               p.Name,
-			Type:               stringToProtoPatternType(p.Type),
-			Description:        p.Description,
-			Conditions:         p.Conditions,
-			Interpretation:     p.Interpretation,
-			ApplicableMatters:  p.ApplicableMatters,
-			Remedies:           p.Remedies,
-			Examples:           p.Examples,
+			Id:                p.ID,
+			Name:              p.Name,
+			Type:              stringToProtoPatternType(p.Type),
+			Description:       p.Description,
+			Conditions:        p.Conditions,
+			Interpretation:    p.Interpretation,
+			ApplicableMatters: p.ApplicableMatters,
+			Remedies:          p.Remedies,
+			Examples:          p.Examples,
 		})
 	}
 

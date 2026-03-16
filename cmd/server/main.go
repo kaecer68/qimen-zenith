@@ -6,8 +6,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/kaecer/qimen-zenith/internal/handler"
-	pb "github.com/kaecer/qimen-zenith/proto"
+	"github.com/kaecer68/qimen-zenith/v2/internal/handler"
+	pb "github.com/kaecer68/qimen-zenith/v2/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

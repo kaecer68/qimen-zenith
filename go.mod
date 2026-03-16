@@ -1,4 +1,4 @@
-module github.com/kaecer/qimen-zenith
+module github.com/kaecer68/qimen-zenith/v2
 
 go 1.22
 

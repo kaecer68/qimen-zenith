@@ -220,7 +220,7 @@ make proto
 
 ```bash
 # 克隆專案
-git clone https://github.com/kaecer/qimen-zenith.git
+git clone https://github.com/kaecer68/qimen-zenith.git
 cd qimen-zenith
 
 # 安裝 Node 依賴

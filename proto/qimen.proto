@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package qimen;
 
-option go_package = "github.com/kaecer/qimen-zenith/proto";
+option go_package = "github.com/kaecer68/qimen-zenith/v2/proto";
 option java_package = "com.qimen.proto";
 
 // 奇門遁甲服務

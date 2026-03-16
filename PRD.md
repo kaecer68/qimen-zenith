@@ -352,7 +352,7 @@ GET /api/qimen/health
 
 #### v2.0.0 (2026-03-17) - Go 後端遷移
 - [x] **Go 專案骨架** (`go.mod`, `Makefile`)
-  - Go 模組 `github.com/kaecer/qimen-zenith`
+  - Go 模組 `github.com/kaecer68/qimen-zenith/v2`
   - `make proto / build / run / tidy`
 - [x] **核心算法移植至 Go**
   - `pkg/qimen/core.go` — 九宮排盤、評分、分析
