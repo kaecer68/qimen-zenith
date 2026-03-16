@@ -58,6 +58,62 @@ qimen-zenith/
 
 ---
 
+## REST API
+
+本專案提供 REST API，可供外部應用程式調用奇門遁甲排盤與分析服務。
+
+### 端點一覽
+
+| 方法 | 端點 | 說明 |
+|------|------|------|
+| GET | `/api/qimen/plate?date=YYYY-MM-DD` | 排盤計算 |
+| GET | `/api/qimen/analysis?date=YYYY-MM-DD&mode=basic` | 吉凶分析 |
+| GET | `/api/qimen/health` | 服務健康檢查 |
+
+### 排盤 API
+
+```bash
+# 查詢指定日期的奇門盤
+curl http://localhost:3000/api/qimen/plate?date=2026-03-16
+```
+
+回應範例：
+```json
+{
+  "success": true,
+  "data": {
+    "date": "2026-03-16",
+    "yearGanZhi": "丙午",
+    "yinYang": "陽遁",
+    "juNumber": 3,
+    "heavenPlate": { "1": "庚", "2": "戊", ... },
+    "humanPlate": { "1": "休門", "2": "生門", ... },
+    "starsPlate": { "1": "天蓬", "2": "天任", ... },
+    "spiritPlate": { "1": "值符", "2": "螣蛇", ... }
+  }
+}
+```
+
+### 分析 API
+
+```bash
+# 基礎分析
+curl http://localhost:3000/api/qimen/analysis?date=2026-03-16
+
+# 增強分析（含三奇六儀 + 門星神組合）
+curl http://localhost:3000/api/qimen/analysis?date=2026-03-16&mode=enhanced
+```
+
+### 健康檢查
+
+```bash
+curl http://localhost:3000/api/qimen/health
+```
+
+> **注意**：排盤與分析 API 依賴 [lunar-zenith](https://github.com/kaecer68/lunar-zenith) 曆法服務，請確保該服務已啟動。
+
+---
+
 ## 快速開始
 
 ### 環境需求

@@ -1,11 +1,14 @@
 # 奇門遁甲專案產品需求文件 (PRD)
 
 ## 版本資訊
-- **版本**: v0.1.0
+- **版本**: v1.0.0
 - **建立日期**: 2026-03-16
-- **專案名稱**: 奇門遁甲 · 日家奇門
-- **目標用戶**: 專業命理師
+- **最後更新**: 2026-03-16
+- **專案名稱**: 奇門遁甲 · Qimen Zenith
+- **目標用戶**: 專業命理師、奇門遁甲愛好者
 - **產品形式**: 網頁應用程式 (Web App)
+- **開源授權**: MIT License
+- **GitHub**: https://github.com/kaecer68/qimen-zenith
 
 ---
 
@@ -40,22 +43,32 @@
 ```
 src/
 ├── app/                    # Next.js App Router
+│   ├── api/               # REST API 路由
+│   │   └── qimen/
+│   │       ├── plate/route.ts     # 排盤 API
+│   │       ├── analysis/route.ts  # 分析 API
+│   │       └── health/route.ts    # 健康檢查 API
 │   ├── page.tsx           # 主頁面
 │   ├── layout.tsx         # 根佈局
 │   └── globals.css        # 全局樣式
 ├── components/
 │   ├── qimen/             # 奇門遁甲相關組件
 │   │   ├── QimenCalculator.tsx   # 排盤計算器
-│   │   └── QimenBoard.tsx      # 盤面顯示組件
+│   │   ├── QimenBoard.tsx      # 盤面顯示組件
+│   │   └── QimenAnalysis.tsx   # 分析解說組件
 │   └── ui/                # shadcn/ui 組件
 │       ├── button.tsx
 │       ├── card.tsx
 │       ├── input.tsx
 │       ├── label.tsx
-│       └── select.tsx
+│       ├── tabs.tsx
+│       └── badge.tsx
 ├── lib/
 │   ├── qimen/             # 奇門遁甲核心邏輯
-│   │   └── core.ts        # 排盤計算核心
+│   │   ├── core.ts        # 排盤計算核心
+│   │   ├── serialize.ts   # 序列化工具（Map → JSON）
+│   │   ├── qiyiKnowledge.ts       # 三奇六儀知識庫
+│   │   └── combinationKnowledge.ts # 門星神組合知識庫
 │   ├── lunar-api.ts       # Lunar-Zenith API 整合
 │   └── utils.ts           # 工具函數
 └── types/                 # 型別定義 (待擴充)
@@ -97,11 +110,14 @@ src/
 - [ ] 精確時辰選擇
 - [ ] 刻盤計算
 
-#### Phase 4 - 解盤分析
-- [ ] 格局自動判斷（吉格/凶格）
-- [ ] 用神分析
-- [ ] 宮位生剋關係分析
-- [ ] 時空分析報告
+#### Phase 4 - 解盤分析 ✅ 已完成
+- [x] 基礎宮位吉凶評級
+- [x] 三奇六儀知識庫與分析
+- [x] 門星神組合知識庫與分析
+- [x] 基礎/進階雙模式解說
+- [ ] 用神分析（進階）
+- [ ] 宮位生剋關係分析（進階）
+- [ ] 時空分析報告（進階）
 
 #### Phase 5 - 案例管理
 - [ ] 排盤記錄儲存
@@ -240,21 +256,94 @@ async rewrites() {
 }
 ```
 
-### 7.3 錯誤處理
+### 7.3 奇門遁甲 REST API（對外服務）
+
+本專案同時對外提供 REST API，供外部應用調用。
+
+#### 7.3.1 排盤 API
+```
+GET /api/qimen/plate?date={YYYY-MM-DD}
+
+參數：
+  - date: 日期（選填，預設今天）
+
+回應：
+  - success: boolean
+  - data: QimenPlateJSON（含天盤、地盤、人盤、神盤、星盤）
+  - meta: { timestamp, version }
+
+錯誤碼：
+  - 400 INVALID_DATE: 日期格式錯誤
+  - 503 LUNAR_SERVICE_UNAVAILABLE: 曆法服務不可用
+```
+
+#### 7.3.2 分析 API
+```
+GET /api/qimen/analysis?date={YYYY-MM-DD}&mode={basic|enhanced}
+
+參數：
+  - date: 日期（選填，預設今天）
+  - mode: basic（基礎分析）| enhanced（增強分析，含三奇六儀 + 門星神組合）
+
+回應：
+  - success: boolean
+  - data:
+    - plate: 排盤數據
+    - analysis: 基礎分析（宮位評級、事項分析、整體趨勢）
+    - enhanced: 增強分析（僅 mode=enhanced 時返回）
+  - meta: { mode, timestamp, version }
+```
+
+#### 7.3.3 健康檢查 API
+```
+GET /api/qimen/health
+
+回應：
+  - status: "ok" | "degraded"
+  - version: "1.0.0"
+  - services: { qimen, lunar }
+```
+
+### 7.4 錯誤處理
 - API 連接失敗時顯示友善錯誤訊息
 - 提示使用者確認 lunar-zenith 服務已啟動
+- REST API 統一錯誤回應格式：`{ error: string, code: string }`
 
 ---
 
 ## 8. 開發里程碑
 
-### 8.1 已完成 (v0.1.0)
+### 8.1 已完成 ✅
+
+#### v1.0.0 (2026-03-16) - 開源發布版本
 - [x] Next.js + TypeScript + Tailwind CSS 專案建立
 - [x] shadcn/ui 組件庫整合
 - [x] 日家奇門核心排盤邏輯
 - [x] 九宮格盤面視覺化
 - [x] Lunar-Zenith API 整合
 - [x] 基礎日期選擇與排盤功能
+- [x] **三奇六儀知識庫** (`qiyiKnowledge.ts`)
+  - 十天干克應組合（45種）
+  - 古典斷語與現代建議
+- [x] **門星神組合知識庫** (`combinationKnowledge.ts`)
+  - 八門詳細解說（8門 x 8類事項）
+  - 門星組合分析（64種）
+  - 門神組合分析
+- [x] **分析系統** (`QimenAnalysis.tsx`)
+  - 基礎/進階雙模式
+  - 三奇六儀詳解分頁
+  - 門星神組合分頁
+  - 宮位評級與建議
+- [x] **開源準備**
+  - 專業 README.md
+  - MIT License
+  - package.json 元數據完善
+  - GitHub 倉庫建立
+
+#### v0.1.0 (2026-03-16) - MVP 版本
+- [x] 初始專案建立
+- [x] 基礎排盤功能
+- [x] 九宮格視覺化
 
 ### 8.2 下一階段 (v0.2.0)
 - [ ] 局數計算精度優化
@@ -320,6 +409,7 @@ async rewrites() {
 
 | 版本 | 日期 | 變更內容 | 作者 |
 |------|------|---------|------|
+| v1.0.0 | 2026-03-16 | 開源發布：新增三奇六儀/門星神知識庫、進階分析模式、專業文件 | Cascade |
 | v0.1.0 | 2026-03-16 | 初始版本，MVP 功能完成 | Cascade |
 
 ---
