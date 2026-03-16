@@ -76,17 +76,11 @@ export function QimenCalculator() {
 
   // 當時間參數改變且已有排盤結果時，自動重新計算
   useEffect(() => {
-    if (plate && isAutoCalc) {
+    if (plate && isAutoCalc && !loading) {
       handleCalculate();
     }
-  }, [hour, handleCalculate, plate, isAutoCalc]);
-
-  // 當日期改變時，自動重新計算（如果已有結果）
-  useEffect(() => {
-    if (plate && isAutoCalc) {
-      handleCalculate();
-    }
-  }, [date, handleCalculate, plate, isAutoCalc]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hour, date, isAutoCalc]);
 
   // 首次排盤後啟用自動計算
   const handleFirstCalculate = async () => {
