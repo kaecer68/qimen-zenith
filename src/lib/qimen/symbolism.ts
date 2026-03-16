@@ -146,37 +146,37 @@ export const MATTER_CONFIG: Record<MatterType, {
 export const LIUQIN_RELATIONS = [
   {
     key: 'father',
-    name: '父親',
+    name: '父親/領導',
     palace: 6, // 乾六宮
     palaceName: '乾六宮',
-    description: '父親、男性長輩、領導上司、權威人士、政府官員',
+    description: '父親、領導、權威人士',
     trigram: '乾',
     applicableMatters: ['career', 'relationship', 'lost', 'marriage', 'business'] as MatterType[],
   },
   {
     key: 'mother',
-    name: '母親',
+    name: '母親/長輩',
     palace: 2, // 坤二宮
     palaceName: '坤二宮',
-    description: '母親、女性長輩、群眾、下屬、合作夥伴、土地相關',
+    description: '母親、長輩、群眾',
     trigram: '坤',
     applicableMatters: ['career', 'relationship', 'lost', 'marriage', 'business'] as MatterType[],
   },
   {
     key: 'elder_brother',
-    name: '兄長',
+    name: '長男/兄長',
     palace: 3, // 震三宮
     palaceName: '震三宮',
-    description: '兄長、男性同輩、競爭對手、急進之人、雷厲風行者',
+    description: '長男、兄長、急進之人',
     trigram: '震',
     applicableMatters: ['career', 'relationship', 'lost', 'marriage', 'business'] as MatterType[],
   },
   {
     key: 'elder_sister',
-    name: '姊姊',
+    name: '長女/姊姊',
     palace: 4, // 巽四宮
     palaceName: '巽四宮',
-    description: '姊姊、長女、文人、僧道、寡婦、技藝人、進退不定者',
+    description: '長女、文人、僧道、寡婦',
     trigram: '巽',
     applicableMatters: ['career', 'relationship', 'lost', 'marriage', 'business', 'study'] as MatterType[],
   },
@@ -185,43 +185,43 @@ export const LIUQIN_RELATIONS = [
     name: '自己',
     palace: 5, // 中五寄坤二，但自為中心
     palaceName: '中五宮',
-    description: '自己、中心人物、當事人、問測者本人',
+    description: '自己、當事人',
     trigram: '中',
     applicableMatters: [] as MatterType[], // 所有都適用
   },
   {
     key: 'younger_sister',
-    name: '妹妹',
+    name: '少女/妹妹',
     palace: 7, // 兌七宮
     palaceName: '兌七宮',
-    description: '妹妹、少女、巫師、說客、口齒伶俐者、享樂之人',
+    description: '少女、巫師、口舌之人',
     trigram: '兌',
     applicableMatters: ['relationship', 'marriage'] as MatterType[],
   },
   {
     key: 'younger_brother',
-    name: '弟弟',
+    name: '少男/弟弟',
     palace: 8, // 艮八宮
     palaceName: '艮八宮',
-    description: '弟弟、少男、僧道、閽寺（守門人）、靜止之人',
+    description: '少男、僧道、閽寺（守門人）',
     trigram: '艮',
     applicableMatters: ['relationship', 'lost'] as MatterType[],
   },
   {
     key: 'spouse',
-    name: '配偶',
+    name: '中男/配偶',
     palace: 1, // 坎一宮（也可看對應宮位）
     palaceName: '坎一宮',
-    description: '配偶、中男、盜賊、險狡之人、智慧之人',
+    description: '中男、盜賊、險狡之人',
     trigram: '坎',
     applicableMatters: ['relationship', 'marriage', 'lost'] as MatterType[],
   },
   {
     key: 'child',
-    name: '子女',
+    name: '中女/子女',
     palace: 9, // 離九宮
     palaceName: '離九宮',
-    description: '子女、中女、文人、甲胄之人、眼目明亮者',
+    description: '中女、文人、甲胄之人',
     trigram: '離',
     applicableMatters: ['relationship', 'marriage', 'lost', 'study'] as MatterType[],
   },
