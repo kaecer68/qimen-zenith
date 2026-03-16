@@ -177,7 +177,7 @@ export function QimenCalculator() {
                 <option value="">請選擇對方身份...</option>
                 {getApplicableLiuqin(matterType).map((relation: typeof LIUQIN_RELATIONS[number]) => (
                   <option key={relation.key} value={relation.key}>
-                    {relation.name}（{relation.palaceName}）- {relation.description.split('、')[0]}
+                    {relation.palaceName}【{relation.description}】
                   </option>
                 ))}
               </select>
