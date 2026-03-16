@@ -16,6 +16,15 @@ service QimenService {
   // 增強分析 - 含三奇六儀+門星神組合
   rpc AnalyzeEnhanced(AnalyzeEnhancedRequest) returns (AnalyzeEnhancedResponse);
   
+  // 教學系統 - 獲取教學內容
+  rpc GetTeachingSections(TeachingRequest) returns (TeachingResponse);
+  
+  // 案例分析庫 - 獲取經典案例
+  rpc GetCases(CasesRequest) returns (CasesResponse);
+  
+  // 格局查詢手冊 - 獲取吉凶格局
+  rpc GetPatterns(PatternsRequest) returns (PatternsResponse);
+  
   // 健康檢查
   rpc Health(HealthRequest) returns (HealthResponse);
 }
@@ -168,4 +177,126 @@ message MetaInfo {
   string timestamp = 1;
   string version = 2;
   string mode = 3;
+}
+
+// ========== 教學系統消息 ==========
+
+message TeachingRequest {
+  string section_id = 1;    // 選填，無則返回全部
+}
+
+message TeachingResponse {
+  bool success = 1;
+  string error = 2;
+  repeated TeachingSection sections = 3;
+  int32 count = 4;
+}
+
+message TeachingSection {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  int32 order = 4;
+  repeated TeachingContent contents = 5;
+}
+
+message TeachingContent {
+  string type = 1;           // text/highlight/list/table
+  string content = 2;
+  string highlight_type = 3; // info/warning/success
+  repeated string items = 4; // for list type
+  repeated TableRow rows = 5; // for table type
+  repeated string headers = 6;  // for table type
+}
+
+message TableRow {
+  repeated string cells = 1;
+}
+
+// ========== 案例分析庫消息 ==========
+
+message CasesRequest {
+  string case_id = 1;       // 選填
+  string tag = 2;           // 標籤篩選
+  MatterType matter_type = 3; // 問事類型篩選
+  string search = 4;        // 關鍵字搜尋
+}
+
+message CasesResponse {
+  bool success = 1;
+  string error = 2;
+  repeated CaseStudy cases = 3;
+  int32 count = 4;
+  int32 total = 5;
+}
+
+message CaseStudy {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string date = 4;
+  string hour = 5;
+  string solar_term = 6;
+  int32 ju_number = 7;
+  string yin_yang = 8;
+  MatterType matter_type = 9;
+  string question = 10;
+  string background = 11;
+  PlateSnapshot plate_snapshot = 12;
+  CaseAnalysis analysis = 13;
+  string conclusion = 14;
+  repeated string lessons = 15;
+  repeated string tags = 16;
+}
+
+message PlateSnapshot {
+  map<string, string> heaven_plate = 1;
+  map<string, string> human_plate = 2;
+  map<string, string> spirit_plate = 3;
+  map<string, string> stars_plate = 4;
+  map<string, string> earth_plate = 5;
+}
+
+message CaseAnalysis {
+  int32 god_palace = 1;
+  string palace_analysis = 2;
+  string element_analysis = 3;
+  string timing_analysis = 4;
+  string direction_analysis = 5;
+}
+
+// ========== 格局查詢手冊消息 ==========
+
+message PatternsRequest {
+  string pattern_id = 1;    // 選填
+  PatternType type = 2;     // 格局類型篩選
+  string search = 3;        // 關鍵字搜尋
+}
+
+message PatternsResponse {
+  bool success = 1;
+  string error = 2;
+  repeated QimenPattern patterns = 3;
+  int32 count = 4;
+  int32 total = 5;
+}
+
+enum PatternType {
+  PATTERN_TYPE_UNSPECIFIED = 0;
+  PATTERN_TYPE_AUSPICIOUS = 1;     // 大吉格局
+  PATTERN_TYPE_INAUSPICIOUS = 2;   // 凶格
+  PATTERN_TYPE_SPECIAL = 3;        // 特殊格局
+  PATTERN_TYPE_COMBINATION = 4;    // 組合格局
+}
+
+message QimenPattern {
+  string id = 1;
+  string name = 2;
+  PatternType type = 3;
+  string description = 4;
+  repeated string conditions = 5;
+  string interpretation = 6;
+  repeated string applicable_matters = 7;
+  string remedies = 8;
+  repeated string examples = 9;
 }
