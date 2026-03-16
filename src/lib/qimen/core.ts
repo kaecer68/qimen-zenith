@@ -7,6 +7,8 @@
  * - 一年 360 日，分為 72 局
  */
 
+import { getShichenInfo } from './hourPillar';
+
 // 九宮八卦對應關係
 export const PALACES = [
   { index: 4, name: '巽四宮', trigram: '巽', direction: '東南', element: '木' },
@@ -195,6 +197,8 @@ export interface QimenPlate {
   monthGanZhi: string;
   dayGanZhi: string;
   hourGanZhi: string;
+  hour?: number;           // 小時數（0-23），用於時辰計算
+  shichen?: string;        // 時辰名稱（如「子時」）
   juNumber: number;
   isYang: boolean;
   yinYang: string;
@@ -214,9 +218,17 @@ export function calculateDailyQimen(
   dayGanZhi: string,
   hourGanZhi: string,
   solarTerm: string,
-  solarTermIndex: number
+  solarTermIndex: number,
+  hour?: number
 ): QimenPlate {
   const { juNumber, isYang } = getDailyQimenJuNumber(date, solarTermIndex);
+
+  // 時辰名稱（本地計算）
+  let shichen: string | undefined;
+  if (hour !== undefined) {
+    const info = getShichenInfo(hour);
+    shichen = info.name;
+  }
   
   return {
     date: date.toISOString().split('T')[0],
@@ -224,6 +236,8 @@ export function calculateDailyQimen(
     monthGanZhi,
     dayGanZhi,
     hourGanZhi,
+    hour,
+    shichen,
     juNumber,
     isYang,
     yinYang: isYang ? '陽遁' : '陰遁',

@@ -12,6 +12,8 @@ export interface QimenPlateJSON {
   monthGanZhi: string;
   dayGanZhi: string;
   hourGanZhi: string;
+  hour?: number;
+  shichen?: string;
   juNumber: number;
   isYang: boolean;
   yinYang: string;
@@ -48,6 +50,8 @@ export function serializePlate(plate: QimenPlate): QimenPlateJSON {
     monthGanZhi: plate.monthGanZhi,
     dayGanZhi: plate.dayGanZhi,
     hourGanZhi: plate.hourGanZhi,
+    hour: plate.hour,
+    shichen: plate.shichen,
     juNumber: plate.juNumber,
     isYang: plate.isYang,
     yinYang: plate.yinYang,

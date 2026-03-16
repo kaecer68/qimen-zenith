@@ -66,6 +66,7 @@ src/
 ├── lib/
 │   ├── qimen/             # 奇門遁甲核心邏輯
 │   │   ├── core.ts        # 排盤計算核心
+│   │   ├── hourPillar.ts  # 時柱本地計算（五鼠遁元法）
 │   │   ├── serialize.ts   # 序列化工具（Map → JSON）
 │   │   ├── qiyiKnowledge.ts       # 三奇六儀知識庫
 │   │   └── combinationKnowledge.ts # 門星神組合知識庫
@@ -262,33 +263,41 @@ async rewrites() {
 
 #### 7.3.1 排盤 API
 ```
-GET /api/qimen/plate?date={YYYY-MM-DD}
+GET /api/qimen/plate?date={YYYY-MM-DD}&hour={0-23}
 
 參數：
   - date: 日期（選填，預設今天）
+  - hour: 小時數 0-23（選填，預設當前小時）→ 本地計算時柱
+
+時柱計算：
+  - 五鼠遁元法：根據日干推算時干
+  - 十二時辰：根據 hour 對應地支
+  - 早子時（23:00）：日柱自動按下一日計算
 
 回應：
   - success: boolean
-  - data: QimenPlateJSON（含天盤、地盤、人盤、神盤、星盤）
+  - data: QimenPlateJSON（含天盤、地盤、人盤、神盤、星盤、時柱、時辰）
   - meta: { timestamp, version }
 
 錯誤碼：
   - 400 INVALID_DATE: 日期格式錯誤
+  - 400 INVALID_HOUR: 小時數無效
   - 503 LUNAR_SERVICE_UNAVAILABLE: 曆法服務不可用
 ```
 
 #### 7.3.2 分析 API
 ```
-GET /api/qimen/analysis?date={YYYY-MM-DD}&mode={basic|enhanced}
+GET /api/qimen/analysis?date={YYYY-MM-DD}&hour={0-23}&mode={basic|enhanced}
 
 參數：
   - date: 日期（選填，預設今天）
+  - hour: 小時數 0-23（選填，預設當前小時）→ 本地計算時柱
   - mode: basic（基礎分析）| enhanced（增強分析，含三奇六儀 + 門星神組合）
 
 回應：
   - success: boolean
   - data:
-    - plate: 排盤數據
+    - plate: 排盤數據（含時柱、時辰）
     - analysis: 基礎分析（宮位評級、事項分析、整體趨勢）
     - enhanced: 增強分析（僅 mode=enhanced 時返回）
   - meta: { mode, timestamp, version }

@@ -49,6 +49,8 @@ qimen-zenith/
 │   └── lib/
 │       ├── qimen/        # 奇門核心演算法
 │       │   ├── core.ts   # 排盤計算
+│       │   ├── hourPillar.ts  # 時柱本地計算（五鼠遁元法）
+│       │   ├── serialize.ts   # API 序列化工具
 │       │   ├── qiyiKnowledge.ts    # 三奇六儀知識庫
 │       │   └── combinationKnowledge.ts  # 門星神組合知識庫
 │       └── utils.ts      # 工具函數
@@ -66,14 +68,26 @@ qimen-zenith/
 
 | 方法 | 端點 | 說明 |
 |------|------|------|
-| GET | `/api/qimen/plate?date=YYYY-MM-DD` | 排盤計算 |
-| GET | `/api/qimen/analysis?date=YYYY-MM-DD&mode=basic` | 吉凶分析 |
+| GET | `/api/qimen/plate?date=YYYY-MM-DD&hour=0-23` | 排盤計算 |
+| GET | `/api/qimen/analysis?date=YYYY-MM-DD&hour=0-23&mode=basic` | 吉凶分析 |
 | GET | `/api/qimen/health` | 服務健康檢查 |
+
+### 共用參數
+
+| 參數 | 說明 | 預設值 |
+|------|------|--------|
+| `date` | 日期，格式 YYYY-MM-DD | 今天 |
+| `hour` | 小時數 0-23，本地計算時柱（五鼠遁元法） | 當前小時 |
+
+> 時辰（時柱）在奇門遁甲中至關重要，每 2 小時變一局。時柱由**本地計算**（非依賴外部服務），使用五鼠遁元法根據日干推算時干。
 
 ### 排盤 API
 
 ```bash
-# 查詢指定日期的奇門盤
+# 查詢指定日期 + 時辰的奇門盤
+curl http://localhost:3000/api/qimen/plate?date=2026-03-16&hour=9
+
+# 省略 hour 則使用伺服器當前時辰
 curl http://localhost:3000/api/qimen/plate?date=2026-03-16
 ```
 
@@ -84,6 +98,8 @@ curl http://localhost:3000/api/qimen/plate?date=2026-03-16
   "data": {
     "date": "2026-03-16",
     "yearGanZhi": "丙午",
+    "hourGanZhi": "己巳",
+    "shichen": "巳時",
     "yinYang": "陽遁",
     "juNumber": 3,
     "heavenPlate": { "1": "庚", "2": "戊", ... },
@@ -97,11 +113,11 @@ curl http://localhost:3000/api/qimen/plate?date=2026-03-16
 ### 分析 API
 
 ```bash
-# 基礎分析
-curl http://localhost:3000/api/qimen/analysis?date=2026-03-16
+# 基礎分析（指定巳時）
+curl http://localhost:3000/api/qimen/analysis?date=2026-03-16&hour=9
 
 # 增強分析（含三奇六儀 + 門星神組合）
-curl http://localhost:3000/api/qimen/analysis?date=2026-03-16&mode=enhanced
+curl http://localhost:3000/api/qimen/analysis?date=2026-03-16&hour=9&mode=enhanced
 ```
 
 ### 健康檢查

@@ -23,10 +23,13 @@ export function QimenBoard({ plate }: QimenBoardProps) {
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-lg">
-          日家奇門盤
+          奇門遁甲盤
         </CardTitle>
         <div className="text-base text-muted-foreground">
           {plate.date} · {plate.yearGanZhi}年 {plate.monthGanZhi}月 {plate.dayGanZhi}日 {plate.hourGanZhi}時
+          {plate.shichen && (
+            <span className="ml-1 text-primary font-medium">（{plate.shichen}）</span>
+          )}
         </div>
         <div className="text-lg font-medium text-primary">
           {plate.solarTerm} · {plate.yinYang} · {plate.juNumber}局
