@@ -6,7 +6,7 @@
 - **最後更新**: 2026-03-16
 - **專案名稱**: 奇門遁甲 · Qimen Zenith
 - **目標用戶**: 專業命理師、奇門遁甲愛好者
-- **產品形式**: 網頁應用程式 (Web App)
+- **產品形式**: 網頁應用程式 (Web App) + REST/gRPC API 服務
 - **開源授權**: MIT License
 - **GitHub**: https://github.com/kaecer68/qimen-zenith
 
@@ -34,45 +34,37 @@
 | 圖標 | Lucide React | 0.577.0 | 現代化圖標庫 |
 
 ### 2.2 後端/外部服務
-| 服務 | 說明 | 接口 |
+| 服務 | 說明 | 地址 |
 |------|------|------|
-| lunar-zenith | 高精度曆法計算服務 | REST API (localhost:8080) |
-| 曆法數據 | 干支、節氣、四柱計算 | /v1/calendar?date={YYYY-MM-DD} |
+| Next.js App | 前端與 REST API | http://localhost:3000 |
+| lunar-zenith | 曆法計算服務 | http://localhost:8080 |
+| gRPC Server | 高性能 RPC 服務 | localhost:50051 |
 
 ### 2.3 專案結構
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── api/               # REST API 路由
-│   │   └── qimen/
-│   │       ├── plate/route.ts     # 排盤 API
-│   │       ├── analysis/route.ts  # 分析 API
-│   │       └── health/route.ts    # 健康檢查 API
-│   ├── page.tsx           # 主頁面
-│   ├── layout.tsx         # 根佈局
-│   └── globals.css        # 全局樣式
-├── components/
-│   ├── qimen/             # 奇門遁甲相關組件
-│   │   ├── QimenCalculator.tsx   # 排盤計算器
-│   │   ├── QimenBoard.tsx      # 盤面顯示組件
-│   │   └── QimenAnalysis.tsx   # 分析解說組件
-│   └── ui/                # shadcn/ui 組件
-│       ├── button.tsx
-│       ├── card.tsx
-│       ├── input.tsx
-│       ├── label.tsx
-│       ├── tabs.tsx
-│       └── badge.tsx
-├── lib/
-│   ├── qimen/             # 奇門遁甲核心邏輯
-│   │   ├── core.ts        # 排盤計算核心
-│   │   ├── hourPillar.ts  # 時柱本地計算（五鼠遁元法）
-│   │   ├── serialize.ts   # 序列化工具（Map → JSON）
-│   │   ├── qiyiKnowledge.ts       # 三奇六儀知識庫
-│   │   └── combinationKnowledge.ts # 門星神組合知識庫
-│   ├── lunar-api.ts       # Lunar-Zenith API 整合
-│   └── utils.ts           # 工具函數
-└── types/                 # 型別定義 (待擴充)
+├── app/
+│   ├── api/qimen/          # REST API
+│   │   ├── plate/route.ts
+│   │   ├── analysis/route.ts
+│   │   └── health/route.ts
+│   ├── page.tsx
+│   └── layout.tsx
+├── components/qimen/
+│   ├── QimenCalculator.tsx   # 含問事類型/六親選擇
+│   ├── QimenBoard.tsx      # 含主事宮位高亮
+│   └── QimenAnalysis.tsx   # 含九宮多維象徵
+├── lib/qimen/
+│   ├── core.ts
+│   ├── hourPillar.ts       # 五鼠遁元法
+│   ├── symbolism.ts        # 九宮象徵+六親+問事類型
+│   ├── qiyiKnowledge.ts
+│   └── combinationKnowledge.ts
+├── server/
+│   └── grpc-server.ts      # gRPC 服務實現
+├── proto/
+│   └── qimen.proto         # gRPC 協議定義
+└── lib/lunar-api.ts
 ```
 
 ---
@@ -94,13 +86,37 @@ src/
 4. **神盤**: 八神分布（值符螣蛇太陰六合白虎玄武九地九天）
 5. **星盤**: 九星分布（天蓬天任天沖天輔天英天芮天柱天心）
 
-#### 3.1.2 曆法資訊顯示
-- 公曆日期
-- 四柱干支（年月日時）
-- 當前節氣
-- 遁局資訊（陰遁/陽遁、局數）
+#### 3.1.2 時柱系統
+- **五鼠遁元法**: 本地計算時干，根據日干推算
+- **十二時辰**: 子丑寅卯辰巳午未申酉戌亥對應 24 小時
+- **早子時處理**: 23:00-23:59 自動歸入下一日
 
-### 3.2 未來功能規劃
+#### 3.1.3 問事參數系統
+- **問事類型**: 13 種分類（財運、官運、感情、學業等）
+- **用神自動判斷**: 根據問事類型對應八門/九星
+- **六親關係**: 後天八卦六親系統（父親/領導、母親/長輩等）
+- **主事宮位標註**: 米黃色高亮顯示用神所在宮位
+
+#### 3.1.4 九宮多維象徵系統
+- **人事象徵**: 六親人物角色對應
+- **身體象徵**: 臟腑、部位對應
+- **事務象徵**: 宜忌事項分類
+- **時間象徵**: 季節、節氣對應
+
+### 3.2 API 服務規格
+
+#### 3.2.1 REST API
+- 基礎 URL: `http://localhost:3000/api`
+- 端點: `/qimen/plate`, `/qimen/analysis`
+- 支持參數: date, hour, mode
+
+#### 3.2.2 gRPC API
+- 地址: `localhost:50051`
+- 服務: QimenService
+- 方法: CalculatePlate, AnalyzePlate, AnalyzeEnhanced, Health
+- Proto 文件: `proto/qimen.proto`
+
+### 3.3 未來功能規劃
 
 #### Phase 2 - 月家奇門
 - [ ] 月家奇門排盤邏輯
@@ -324,6 +340,33 @@ GET /api/qimen/health
 
 ### 8.1 已完成 ✅
 
+#### v1.1.0 (2026-03-16) - API 服務增強
+- [x] **時柱/時辰系統** (`hourPillar.ts`)
+  - 五鼠遁元法本地計算時干
+  - 十二時辰對應 24 小時制
+  - 早子時自動處理（23:00 歸入下一日）
+- [x] **問事類型系統** (`symbolism.ts`)
+  - 13 種問事類型（財運、官運、感情、學業等）
+  - 用神自動對應八門/九星
+  - 六親關係選擇（後天八卦系統）
+- [x] **九宮多維象徵系統** (`symbolism.ts`)
+  - 人事象徵：六親人物角色
+  - 身體象徵：臟腑、部位對應
+  - 事務象徵：宜忌事項分類
+  - 時間象徵：季節、節氣對應
+- [x] **主事宮位視覺化**
+  - 米黃色高亮顯示用神所在宮位
+  - 九宮解說多維度呈現
+- [x] **gRPC 服務接口** (`grpc-server.ts`)
+  - CalculatePlate - 排盤計算
+  - AnalyzePlate - 基礎分析
+  - AnalyzeEnhanced - 增強分析
+  - Health - 健康檢查
+- [x] **API 文檔** (`API.md`)
+  - REST API 使用說明
+  - gRPC 服務定義
+  - 問事類型對照表
+
 #### v1.0.0 (2026-03-16) - 開源發布版本
 - [x] Next.js + TypeScript + Tailwind CSS 專案建立
 - [x] shadcn/ui 組件庫整合
@@ -418,7 +461,8 @@ GET /api/qimen/health
 
 | 版本 | 日期 | 變更內容 | 作者 |
 |------|------|---------|------|
-| v1.0.0 | 2026-03-16 | 開源發布：新增三奇六儀/門星神知識庫、進階分析模式、專業文件 | Cascade |
+| v1.1.0 | 2026-03-16 | API 服務增強：時柱系統、問事類型、六親關係、九宮象徵、gRPC 接口 | Cascade |
+| v1.0.0 | 2026-03-16 | 開源發布：三奇六儀/門星神知識庫、進階分析模式、專業文件 | Cascade |
 | v0.1.0 | 2026-03-16 | 初始版本，MVP 功能完成 | Cascade |
 
 ---

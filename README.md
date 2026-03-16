@@ -188,6 +188,9 @@ npm run build
 
 相關專案：
 - [lunar-zenith](https://github.com/kaecer68/lunar-zenith) - 高精度農曆節氣 API
+- [ziwei-zenith](https://github.com/kaecer68/ziwei-zenith) - 紫微斗數排盤 API
+- [liuren-zenith](https://github.com/kaecer68/liuren-zenith) - 六壬排盤 API
+- [bazi-zenith](https://github.com/kaecer68/bazi-zenith) - 八字排盤 API
 
 ---
 
