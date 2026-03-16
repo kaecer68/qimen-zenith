@@ -108,6 +108,17 @@ npm run build
 
 ---
 
+## 關於作者
+
+[德凱/KAECER](https://github.com/kaecer68) - 對傳統文化數位化有興趣的前端工程師
+- Blog: https://goluck.im/
+- Twitter: [@kaecer](https://twitter.com/kaecer)
+
+相關專案：
+- [lunar-zenith](https://github.com/kaecer68/lunar-zenith) - 高精度農曆節氣 API
+
+---
+
 <p align="center">
   <sub>Built with passion for traditional Chinese metaphysics and modern web technology.</sub>
 </p>
