@@ -9,6 +9,7 @@ import { QimenBoard } from '@/components/qimen/QimenBoard';
 import { QimenAnalysis } from '@/components/qimen/QimenAnalysis';
 import { RecordsManager } from '@/components/qimen/RecordsManager';
 import { ExportPanel } from '@/components/qimen/ExportPanel';
+import { TeachingSystem } from '@/components/qimen/TeachingSystem';
 import { getLunarData } from '@/lib/lunar-api';
 import { calculateDailyQimen, QimenPlate } from '@/lib/qimen/core';
 import { SHICHEN, calculateHourPillar, getShichenIndex, isEarlyZiHour } from '@/lib/qimen/hourPillar';
@@ -241,6 +242,7 @@ export function QimenCalculator() {
             matterType={matterType}
             liuqin={liuqin}
           />
+          <TeachingSystem />
         </>
       )}
     </div>
