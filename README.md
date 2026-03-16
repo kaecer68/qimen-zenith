@@ -27,6 +27,7 @@
 - **三奇六儀分析**：詳細的三奇（乙丙丁）與六儀組合解釋
 - **門星神組合**：八門、九星、八神交互作用的專業分析
 - **宮位吉凶評級**：自動計算各宮位分數與建議
+- **用神與六親關係**：依問事類型自動對應用神宮位，支援六親關係選擇
 
 ### 分析模式
 - **基礎模式**：簡潔易懂的吉凶解說
@@ -34,6 +35,17 @@
   - 三奇六儀詳解（天干克應）
   - 門星神組合分析
   - 古典斷語與現代建議
+  - 時空分析（空亡、入墓、擊刑、馬星）
+  - 宮位生剋關係
+
+### 管理功能
+- **記錄管理**：儲存、載入、刪除排盤記錄（LocalStorage）
+- **匯出功能**：支援 JSON 與 CSV 格式匯出
+
+### 教學系統
+- **基礎教學**：九宮八卦、三奇六儀、八門九星八神、五行生剋
+- **案例分析庫**：財運、官運、出行、健康等經典案例
+- **格局查詢手冊**：吉凶格局、特殊格局、組合格局
 
 ---
 
@@ -52,8 +64,16 @@ qimen-zenith/
 │       │   ├── hourPillar.ts  # 時柱本地計算（五鼠遁元法）
 │       │   ├── serialize.ts   # API 序列化工具
 │       │   ├── qiyiKnowledge.ts    # 三奇六儀知識庫
-│       │   └── combinationKnowledge.ts  # 門星神組合知識庫
+│       │   ├── combinationKnowledge.ts  # 門星神組合知識庫
+│       │   ├── matterAnalysis.ts    # 用神分析
+│       │   ├── palaceRelation.ts    # 宮位生剋
+│       │   ├── spacetimeAnalysis.ts # 時空分析
+│       │   ├── teaching.ts          # 基礎教學內容
+│       │   ├── caseStudies.ts       # 案例庫
+│       │   └── patterns.ts          # 格局資料
 │       └── utils.ts      # 工具函數
+├── proto/
+│   └── qimen.proto       # gRPC Protobuf 定義
 ├── public/               # 靜態資源
 └── docs/                 # 文件
 ```
@@ -71,6 +91,9 @@ qimen-zenith/
 | GET | `/api/qimen/plate?date=YYYY-MM-DD&hour=0-23` | 排盤計算 |
 | GET | `/api/qimen/analysis?date=YYYY-MM-DD&hour=0-23&mode=basic` | 吉凶分析 |
 | GET | `/api/qimen/health` | 服務健康檢查 |
+| GET | `/api/teaching/sections?id=xxx` | 教學內容 |
+| GET | `/api/cases?id=&tag=&type=&search=` | 案例庫查詢 |
+| GET | `/api/patterns?id=&type=&search=` | 格局查詢 |
 
 ### 共用參數
 
@@ -127,6 +150,30 @@ curl http://localhost:3000/api/qimen/health
 ```
 
 > **注意**：排盤與分析 API 依賴 [lunar-zenith](https://github.com/kaecer68/lunar-zenith) 曆法服務，請確保該服務已啟動。
+
+---
+
+## gRPC 服務
+
+本專案同時提供 gRPC 服務（port 50051），支援高效能的跨語言調用。
+
+### 服務列表
+
+| RPC | 說明 |
+|-----|------|
+| `CalculatePlate` | 排盤計算 |
+| `AnalyzePlate` | 解盤分析 |
+| `AnalyzeEnhanced` | 增強分析 |
+| `GetTeachingSections` | 教學內容 |
+| `GetCases` | 案例分析 |
+| `GetPatterns` | 格局查詢 |
+| `Health` | 健康檢查 |
+
+### 啟動 gRPC 服務器
+
+```bash
+npx ts-node src/server/grpc.ts
+```
 
 ---
 
