@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -74,10 +74,16 @@ export function QimenCalculator() {
     }
   }, [date, hour]);
 
+  // 使用 ref 追蹤最新的 handleCalculate 函數
+  const handleCalculateRef = useRef(handleCalculate);
+  useEffect(() => {
+    handleCalculateRef.current = handleCalculate;
+  }, [handleCalculate]);
+
   // 當時間參數改變且已有排盤結果時，自動重新計算
   useEffect(() => {
     if (plate && isAutoCalc && !loading) {
-      handleCalculate();
+      handleCalculateRef.current();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hour, date, isAutoCalc]);
