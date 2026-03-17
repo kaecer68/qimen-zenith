@@ -15,7 +15,7 @@ import (
 func main() {
 	port := os.Getenv("GRPC_PORT")
 	if port == "" {
-		port = "50051"
+		port = "50055"
 	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", port))

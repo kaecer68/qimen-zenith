@@ -125,6 +125,16 @@ message QimenPlate {
   map<string, string> human_plate = 14;   // 人盤（八門）
   map<string, string> spirit_plate = 15;  // 神盤（八神）
   map<string, string> stars_plate = 16;   // 天星盤（九星）
+  
+  // 宮位資訊（含方位映射）
+  map<string, PalaceInfo> palace_info = 17;
+}
+
+message PalaceInfo {
+  string name = 1;        // 宮位名稱（如：坎一宮）
+  string trigram = 2;     // 八卦（如：坎）
+  string direction = 3;   // 方位（如：北）
+  string element = 4;     // 五行（如：水）
 }
 
 message QimenAnalysis {
@@ -146,6 +156,9 @@ message PalaceRating {
   string level = 1;             // 大吉/吉/平/凶/大凶
   int32 score = 2;                // 分數 0-100
   string summary = 3;             // 評語摘要
+  string direction = 4;           // 方位（如：北）
+  string trigram = 5;             // 八卦（如：坎）
+  string element = 6;             // 五行（如：水）
 }
 
 message EnhancedAnalysis {
