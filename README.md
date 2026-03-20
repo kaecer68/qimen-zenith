@@ -86,6 +86,16 @@ qimen-zenith/
 └── package.json
 ```
 
+### 本地 Port 契約治理
+
+- **唯一來源**：所有服務埠配置以 `contracts/runtime/ports.env` 為單一真相檔。
+- **必跑流程**：
+  1. `make sync-contracts` — 從契約同步 `.env.ports`
+  2. `make verify-contracts` — 驗證本地 `.env.ports` 是否與契約一致
+- **Port 衝突**：若 `50055`/`3000` 已被其他程序占用，執行 `make dev-clean` 自動釋放契約定義的埠。
+- **檔案治理**：`.env.ports` 由腳本生成並供 `make run`/Go 伺服器載入，**禁止手動修改**。
+- **CI 強制**：PR / CI pipeline 已啟用 `verify-contracts`，若未同步契約將直接被拒。
+
 ### 服務關係
 
 ```
