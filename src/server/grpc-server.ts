@@ -11,6 +11,7 @@ import { calculateDailyQimen, generateQimenAnalysis, analyzePalaceEnhanced, Enha
 import { serializePlate, serializeAnalysis } from '../lib/qimen/serialize';
 import { calculateHourPillar, isEarlyZiHour } from '../lib/qimen/hourPillar';
 import { MatterType } from '../lib/qimen/symbolism';
+import { requireRuntimeValue } from '../lib/runtime-contract';
 
 // 加載 proto 文件
 const PROTO_PATH = resolve(__dirname, '../../proto/qimen.proto');
@@ -438,7 +439,7 @@ const qimenService = {
 };
 
 // 啟動 gRPC 服務器
-export function startGrpcServer(port: number = 50051): grpc.Server {
+export function startGrpcServer(port: number): grpc.Server {
   const server = new grpc.Server();
   server.addService(qimenProto.qimen.QimenService.service, qimenService);
   
@@ -459,6 +460,6 @@ export function startGrpcServer(port: number = 50051): grpc.Server {
 
 // 如果直接運行此文件
 if (require.main === module) {
-  const port = parseInt(process.env.GRPC_PORT || '50051', 10);
+  const port = parseInt(requireRuntimeValue(['QIMEN_GRPC_PORT', 'GRPC_PORT'], 'Qimen gRPC port'), 10);
   startGrpcServer(port);
 }

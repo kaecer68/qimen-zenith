@@ -215,7 +215,7 @@ export function QimenCalculator() {
           )}
 
           <div className="text-sm text-muted-foreground">
-            請先確認 lunar-zenith 服務已啟動於 http://localhost:8080
+            請先確認 lunar-zenith 服務已啟動，並且 `.env.ports` 已完成契約同步
           </div>
         </CardContent>
       </Card>
