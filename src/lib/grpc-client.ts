@@ -2,9 +2,8 @@
  * gRPC client — connects Next.js API routes to the Go qimen backend.
  *
  * Environment variables:
+ *   QIMEN_GRPC_HOST  — contract-derived host:port emitted by .env.ports
  *   GRPC_HOST        — full host:port override for the Go server
- *   QIMEN_GRPC_PORT  — contract-derived gRPC port
- *   GRPC_PORT        — legacy alias generated from .env.ports
  */
 
 import * as grpc from '@grpc/grpc-js';

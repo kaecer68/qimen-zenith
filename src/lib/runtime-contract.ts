@@ -47,19 +47,15 @@ export function requireRuntimeValue(keys: string[], label: string): string {
 }
 
 export function getQimenGrpcHost(): string {
-  const explicitHost = process.env.GRPC_HOST?.trim();
-  if (explicitHost) {
-    return explicitHost;
-  }
-
-  return `localhost:${requireRuntimeValue(['QIMEN_GRPC_PORT', 'GRPC_PORT'], 'Qimen gRPC port')}`;
+  return requireRuntimeValue(
+    ['QIMEN_GRPC_HOST', 'GRPC_HOST'],
+    'Qimen gRPC host'
+  );
 }
 
 export function getLunarApiUrl(): string {
-  const explicitUrl = process.env.LUNAR_API_URL?.trim();
-  if (explicitUrl) {
-    return explicitUrl.replace(/\/$/, '');
-  }
-
-  return `http://localhost:${requireRuntimeValue(['LUNAR_REST_PORT'], 'Lunar REST port')}`;
+  return requireRuntimeValue(
+    ['LUNAR_API_URL'],
+    'Lunar API URL'
+  ).replace(/\/$/, '');
 }

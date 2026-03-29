@@ -173,10 +173,10 @@ export function RecordsManager({
 
             {/* 儲存當前 */}
             <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" disabled={!currentPlate}>
-                  儲存當前排盤
-                </Button>
+              <DialogTrigger
+                render={<Button size="sm" disabled={!currentPlate} />}
+              >
+                儲存當前排盤
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -239,14 +239,14 @@ export function RecordsManager({
           </div>
           
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-1" />
-                篩選
-                {selectedTags.length > 0 && (
-                  <Badge variant="secondary" className="ml-1">{selectedTags.length}</Badge>
-                )}
-              </Button>
+            <DropdownMenuTrigger
+              render={<Button variant="outline" size="sm" />}
+            >
+              <Filter className="w-4 h-4 mr-1" />
+              篩選
+              {selectedTags.length > 0 && (
+                <Badge variant="secondary" className="ml-1">{selectedTags.length}</Badge>
+              )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <div className="p-2">

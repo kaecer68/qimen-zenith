@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -116,9 +117,9 @@ func pillarToGanZhi(p pillarRaw) string {
 
 // GetLunarData fetches calendar data for a date string "YYYY-MM-DD".
 func GetLunarData(date string) (*LunarData, error) {
-	base := os.Getenv("LUNAR_API_URL")
+	base := strings.TrimRight(os.Getenv("LUNAR_API_URL"), "/")
 	if base == "" {
-		base = "http://localhost:8080"
+		return nil, fmt.Errorf("LUNAR_API_URL environment variable not set")
 	}
 	url := fmt.Sprintf("%s/v1/calendar?date=%s", base, date)
 

@@ -25,9 +25,10 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test --experimental-strip-types tests/**/*.test.ts",
     "grpc": "ts-node src/server/grpc-server.ts"
   },
   "dependencies": {
