@@ -25,7 +25,29 @@ const packageDef = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 
-const proto = grpc.loadPackageDefinition(packageDef) as any;
+type GrpcCallback<Res> = (err: grpc.ServiceError | null, response: Res) => void;
+
+interface QimenGrpcService {
+  CalculatePlate: <Req, Res>(request: Req, callback: GrpcCallback<Res>) => void;
+  AnalyzePlate: <Req, Res>(request: Req, callback: GrpcCallback<Res>) => void;
+  AnalyzeEnhanced: <Req, Res>(request: Req, callback: GrpcCallback<Res>) => void;
+  GetTeachingSections: <Req, Res>(request: Req, callback: GrpcCallback<Res>) => void;
+  GetCases: <Req, Res>(request: Req, callback: GrpcCallback<Res>) => void;
+  GetPatterns: <Req, Res>(request: Req, callback: GrpcCallback<Res>) => void;
+  Health: <Req, Res>(request: Req, callback: GrpcCallback<Res>) => void;
+}
+
+interface QimenGrpcCtor {
+  new (host: string, credentials: grpc.ChannelCredentials): QimenGrpcService;
+}
+
+interface LoadedProto {
+  qimen: {
+    QimenService: QimenGrpcCtor;
+  };
+}
+
+const proto = grpc.loadPackageDefinition(packageDef) as unknown as LoadedProto;
 const qimenPackage = proto.qimen;
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -53,7 +75,8 @@ function getClient() {
 function call<Req, Res>(method: string, request: Req): Promise<Res> {
   return new Promise<Res>((resolve, reject) => {
     const client = getClient();
-    client[method](request, (err: grpc.ServiceError | null, response: Res) => {
+    const rpc = client[method as keyof QimenGrpcService] as QimenGrpcService[keyof QimenGrpcService];
+    rpc.call(client, request, (err: grpc.ServiceError | null, response: Res) => {
       if (err) reject(err);
       else resolve(response);
     });
@@ -71,8 +94,8 @@ export interface CalculatePlateRequest {
   liuqin?: string;
 }
 
-export interface AnalyzePlateRequest extends CalculatePlateRequest {}
-export interface AnalyzeEnhancedRequest extends CalculatePlateRequest {}
+export type AnalyzePlateRequest = CalculatePlateRequest;
+export type AnalyzeEnhancedRequest = CalculatePlateRequest;
 
 export interface TeachingRequest {
   section_id?: string;
@@ -91,26 +114,37 @@ export interface PatternsRequest {
   search?: string;
 }
 
+export type GrpcScalar = string | number | boolean | null | undefined;
+export type GrpcMap = Record<string, GrpcScalar | GrpcMap | GrpcList>;
+export type GrpcList = Array<GrpcScalar | GrpcMap | GrpcList>;
+export type GrpcMessage = Record<string, GrpcScalar | GrpcMap | GrpcList>;
+
+export interface HealthResponse extends GrpcMessage {
+  status?: string;
+  version?: string;
+  timestamp?: string;
+}
+
 export const qimenClient = {
   calculatePlate: (req: CalculatePlateRequest) =>
-    call<CalculatePlateRequest, any>('CalculatePlate', req),
+    call<CalculatePlateRequest, GrpcMessage>('CalculatePlate', req),
 
   analyzePlate: (req: AnalyzePlateRequest) =>
-    call<AnalyzePlateRequest, any>('AnalyzePlate', req),
+    call<AnalyzePlateRequest, GrpcMessage>('AnalyzePlate', req),
 
   analyzeEnhanced: (req: AnalyzeEnhancedRequest) =>
-    call<AnalyzeEnhancedRequest, any>('AnalyzeEnhanced', req),
+    call<AnalyzeEnhancedRequest, GrpcMessage>('AnalyzeEnhanced', req),
 
   getTeachingSections: (req: TeachingRequest) =>
-    call<TeachingRequest, any>('GetTeachingSections', req),
+    call<TeachingRequest, GrpcMessage>('GetTeachingSections', req),
 
   getCases: (req: CasesRequest) =>
-    call<CasesRequest, any>('GetCases', req),
+    call<CasesRequest, GrpcMessage>('GetCases', req),
 
   getPatterns: (req: PatternsRequest) =>
-    call<PatternsRequest, any>('GetPatterns', req),
+    call<PatternsRequest, GrpcMessage>('GetPatterns', req),
 
-  health: () => call<Record<string, never>, any>('Health', {}),
+  health: () => call<Record<string, never>, HealthResponse>('Health', {}),
 };
 
 // MatterType enum values (mirrors proto enum)

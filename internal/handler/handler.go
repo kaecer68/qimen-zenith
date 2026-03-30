@@ -149,6 +149,34 @@ func analysisToProto(a *qimen.QimenAnalysisResult) *pb.QimenAnalysis {
 	}
 }
 
+func palaceInfoToProto(info qimen.PalaceInfoSummary) *pb.PalaceInfo {
+	return &pb.PalaceInfo{
+		CurrentHourPalace:     int32(info.CurrentHourPalace),
+		CurrentHourPalaceName: info.CurrentHourPalaceName,
+		WealthPalace:          int32(info.WealthPalace),
+		WealthPalaceName:      info.WealthPalaceName,
+		CareerPalace:          int32(info.CareerPalace),
+		CareerPalaceName:      info.CareerPalaceName,
+	}
+}
+
+func palaceEnhancedScoresToProto(scores []qimen.PalaceEnhancedScore) []*pb.PalaceRatingEnhanced {
+	out := make([]*pb.PalaceRatingEnhanced, 0, len(scores))
+	for _, score := range scores {
+		out = append(out, &pb.PalaceRatingEnhanced{
+			PalaceIndex:       int32(score.PalaceIndex),
+			PalaceName:        score.PalaceName,
+			OverallScore:      int32(score.OverallScore),
+			WealthScore:       int32(score.WealthScore),
+			CareerScore:       int32(score.CareerScore),
+			HealthScore:       int32(score.HealthScore),
+			RelationshipScore: int32(score.RelationshipScore),
+			StudyScore:        int32(score.StudyScore),
+		})
+	}
+	return out
+}
+
 func enhancedToProto(plate *qimen.QimenPlate) *pb.EnhancedAnalysis {
 	palaces := make(map[string]*pb.PalaceEnhanced)
 	for i := 1; i <= 9; i++ {
@@ -221,10 +249,16 @@ func (h *QimenHandler) CalculatePlate(ctx context.Context, req *pb.CalculatePlat
 		return &pb.CalculatePlateResponse{Success: false, Error: msg, ErrorCode: code}, nil
 	}
 
+	matters := qimen.AnalyzeMatters(plate)
+	info := palaceInfoToProto(qimen.GetPalaceInfoSummary(plate, matters))
+	scores := palaceEnhancedScoresToProto(qimen.GeneratePalaceEnhancedScores(plate))
+
 	return &pb.CalculatePlateResponse{
-		Success: true,
-		Plate:   plateToProto(plate),
-		Meta:    meta(""),
+		Success:               true,
+		Plate:                 plateToProto(plate),
+		Meta:                  meta(""),
+		PalaceInfo:            info,
+		PalaceRatingsEnhanced: scores,
 	}, nil
 }
 
@@ -259,12 +293,16 @@ func (h *QimenHandler) AnalyzePlate(ctx context.Context, req *pb.AnalyzePlateReq
 	}
 
 	analysis := qimen.GenerateQimenAnalysis(plate)
+	info := palaceInfoToProto(qimen.GetPalaceInfoSummary(plate, analysis.Matters))
+	scores := palaceEnhancedScoresToProto(qimen.GeneratePalaceEnhancedScores(plate))
 
 	return &pb.AnalyzePlateResponse{
-		Success:  true,
-		Plate:    plateToProto(plate),
-		Analysis: analysisToProto(analysis),
-		Meta:     meta("basic"),
+		Success:               true,
+		Plate:                 plateToProto(plate),
+		Analysis:              analysisToProto(analysis),
+		Meta:                  meta("basic"),
+		PalaceInfo:            info,
+		PalaceRatingsEnhanced: scores,
 	}, nil
 }
 
@@ -299,13 +337,17 @@ func (h *QimenHandler) AnalyzeEnhanced(ctx context.Context, req *pb.AnalyzeEnhan
 	}
 
 	analysis := qimen.GenerateQimenAnalysis(plate)
+	info := palaceInfoToProto(qimen.GetPalaceInfoSummary(plate, analysis.Matters))
+	scores := palaceEnhancedScoresToProto(qimen.GeneratePalaceEnhancedScores(plate))
 
 	return &pb.AnalyzeEnhancedResponse{
-		Success:  true,
-		Plate:    plateToProto(plate),
-		Analysis: analysisToProto(analysis),
-		Enhanced: enhancedToProto(plate),
-		Meta:     meta("enhanced"),
+		Success:               true,
+		Plate:                 plateToProto(plate),
+		Analysis:              analysisToProto(analysis),
+		Enhanced:              enhancedToProto(plate),
+		Meta:                  meta("enhanced"),
+		PalaceInfo:            info,
+		PalaceRatingsEnhanced: scores,
 	}, nil
 }
 

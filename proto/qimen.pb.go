@@ -227,14 +227,16 @@ func (x *CalculatePlateRequest) GetLiuqin() string {
 }
 
 type CalculatePlateResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-	ErrorCode     string                 `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
-	Plate         *QimenPlate            `protobuf:"bytes,4,opt,name=plate,proto3" json:"plate,omitempty"`
-	Meta          *MetaInfo              `protobuf:"bytes,5,opt,name=meta,proto3" json:"meta,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState  `protogen:"open.v1"`
+	Success               bool                    `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Error                 string                  `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	ErrorCode             string                  `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	Plate                 *QimenPlate             `protobuf:"bytes,4,opt,name=plate,proto3" json:"plate,omitempty"`
+	Meta                  *MetaInfo               `protobuf:"bytes,5,opt,name=meta,proto3" json:"meta,omitempty"`
+	PalaceRatingsEnhanced []*PalaceRatingEnhanced `protobuf:"bytes,6,rep,name=palace_ratings_enhanced,json=palaceRatingsEnhanced,proto3" json:"palace_ratings_enhanced,omitempty"`
+	PalaceInfo            *PalaceInfo             `protobuf:"bytes,7,opt,name=palace_info,json=palaceInfo,proto3" json:"palace_info,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *CalculatePlateResponse) Reset() {
@@ -298,6 +300,20 @@ func (x *CalculatePlateResponse) GetPlate() *QimenPlate {
 func (x *CalculatePlateResponse) GetMeta() *MetaInfo {
 	if x != nil {
 		return x.Meta
+	}
+	return nil
+}
+
+func (x *CalculatePlateResponse) GetPalaceRatingsEnhanced() []*PalaceRatingEnhanced {
+	if x != nil {
+		return x.PalaceRatingsEnhanced
+	}
+	return nil
+}
+
+func (x *CalculatePlateResponse) GetPalaceInfo() *PalaceInfo {
+	if x != nil {
+		return x.PalaceInfo
 	}
 	return nil
 }
@@ -371,15 +387,17 @@ func (x *AnalyzePlateRequest) GetLiuqin() string {
 }
 
 type AnalyzePlateResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-	ErrorCode     string                 `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
-	Plate         *QimenPlate            `protobuf:"bytes,4,opt,name=plate,proto3" json:"plate,omitempty"`
-	Analysis      *QimenAnalysis         `protobuf:"bytes,5,opt,name=analysis,proto3" json:"analysis,omitempty"`
-	Meta          *MetaInfo              `protobuf:"bytes,6,opt,name=meta,proto3" json:"meta,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState  `protogen:"open.v1"`
+	Success               bool                    `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Error                 string                  `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	ErrorCode             string                  `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	Plate                 *QimenPlate             `protobuf:"bytes,4,opt,name=plate,proto3" json:"plate,omitempty"`
+	Analysis              *QimenAnalysis          `protobuf:"bytes,5,opt,name=analysis,proto3" json:"analysis,omitempty"`
+	Meta                  *MetaInfo               `protobuf:"bytes,6,opt,name=meta,proto3" json:"meta,omitempty"`
+	PalaceRatingsEnhanced []*PalaceRatingEnhanced `protobuf:"bytes,7,rep,name=palace_ratings_enhanced,json=palaceRatingsEnhanced,proto3" json:"palace_ratings_enhanced,omitempty"`
+	PalaceInfo            *PalaceInfo             `protobuf:"bytes,8,opt,name=palace_info,json=palaceInfo,proto3" json:"palace_info,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *AnalyzePlateResponse) Reset() {
@@ -454,6 +472,20 @@ func (x *AnalyzePlateResponse) GetMeta() *MetaInfo {
 	return nil
 }
 
+func (x *AnalyzePlateResponse) GetPalaceRatingsEnhanced() []*PalaceRatingEnhanced {
+	if x != nil {
+		return x.PalaceRatingsEnhanced
+	}
+	return nil
+}
+
+func (x *AnalyzePlateResponse) GetPalaceInfo() *PalaceInfo {
+	if x != nil {
+		return x.PalaceInfo
+	}
+	return nil
+}
+
 type AnalyzeEnhancedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Date          string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
@@ -523,16 +555,18 @@ func (x *AnalyzeEnhancedRequest) GetLiuqin() string {
 }
 
 type AnalyzeEnhancedResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
-	ErrorCode     string                 `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
-	Plate         *QimenPlate            `protobuf:"bytes,4,opt,name=plate,proto3" json:"plate,omitempty"`
-	Analysis      *QimenAnalysis         `protobuf:"bytes,5,opt,name=analysis,proto3" json:"analysis,omitempty"`
-	Enhanced      *EnhancedAnalysis      `protobuf:"bytes,6,opt,name=enhanced,proto3" json:"enhanced,omitempty"`
-	Meta          *MetaInfo              `protobuf:"bytes,7,opt,name=meta,proto3" json:"meta,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState  `protogen:"open.v1"`
+	Success               bool                    `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Error                 string                  `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	ErrorCode             string                  `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	Plate                 *QimenPlate             `protobuf:"bytes,4,opt,name=plate,proto3" json:"plate,omitempty"`
+	Analysis              *QimenAnalysis          `protobuf:"bytes,5,opt,name=analysis,proto3" json:"analysis,omitempty"`
+	Enhanced              *EnhancedAnalysis       `protobuf:"bytes,6,opt,name=enhanced,proto3" json:"enhanced,omitempty"`
+	Meta                  *MetaInfo               `protobuf:"bytes,7,opt,name=meta,proto3" json:"meta,omitempty"`
+	PalaceRatingsEnhanced []*PalaceRatingEnhanced `protobuf:"bytes,8,rep,name=palace_ratings_enhanced,json=palaceRatingsEnhanced,proto3" json:"palace_ratings_enhanced,omitempty"`
+	PalaceInfo            *PalaceInfo             `protobuf:"bytes,9,opt,name=palace_info,json=palaceInfo,proto3" json:"palace_info,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *AnalyzeEnhancedResponse) Reset() {
@@ -610,6 +644,20 @@ func (x *AnalyzeEnhancedResponse) GetEnhanced() *EnhancedAnalysis {
 func (x *AnalyzeEnhancedResponse) GetMeta() *MetaInfo {
 	if x != nil {
 		return x.Meta
+	}
+	return nil
+}
+
+func (x *AnalyzeEnhancedResponse) GetPalaceRatingsEnhanced() []*PalaceRatingEnhanced {
+	if x != nil {
+		return x.PalaceRatingsEnhanced
+	}
+	return nil
+}
+
+func (x *AnalyzeEnhancedResponse) GetPalaceInfo() *PalaceInfo {
+	if x != nil {
+		return x.PalaceInfo
 	}
 	return nil
 }
@@ -875,6 +923,190 @@ func (x *QimenPlate) GetStarsPlate() map[string]string {
 	return nil
 }
 
+type PalaceInfo struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	CurrentHourPalace     int32                  `protobuf:"varint,1,opt,name=current_hour_palace,json=currentHourPalace,proto3" json:"current_hour_palace,omitempty"`
+	CurrentHourPalaceName string                 `protobuf:"bytes,2,opt,name=current_hour_palace_name,json=currentHourPalaceName,proto3" json:"current_hour_palace_name,omitempty"`
+	WealthPalace          int32                  `protobuf:"varint,3,opt,name=wealth_palace,json=wealthPalace,proto3" json:"wealth_palace,omitempty"`
+	WealthPalaceName      string                 `protobuf:"bytes,4,opt,name=wealth_palace_name,json=wealthPalaceName,proto3" json:"wealth_palace_name,omitempty"`
+	CareerPalace          int32                  `protobuf:"varint,5,opt,name=career_palace,json=careerPalace,proto3" json:"career_palace,omitempty"`
+	CareerPalaceName      string                 `protobuf:"bytes,6,opt,name=career_palace_name,json=careerPalaceName,proto3" json:"career_palace_name,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *PalaceInfo) Reset() {
+	*x = PalaceInfo{}
+	mi := &file_proto_qimen_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PalaceInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PalaceInfo) ProtoMessage() {}
+
+func (x *PalaceInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_qimen_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PalaceInfo.ProtoReflect.Descriptor instead.
+func (*PalaceInfo) Descriptor() ([]byte, []int) {
+	return file_proto_qimen_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *PalaceInfo) GetCurrentHourPalace() int32 {
+	if x != nil {
+		return x.CurrentHourPalace
+	}
+	return 0
+}
+
+func (x *PalaceInfo) GetCurrentHourPalaceName() string {
+	if x != nil {
+		return x.CurrentHourPalaceName
+	}
+	return ""
+}
+
+func (x *PalaceInfo) GetWealthPalace() int32 {
+	if x != nil {
+		return x.WealthPalace
+	}
+	return 0
+}
+
+func (x *PalaceInfo) GetWealthPalaceName() string {
+	if x != nil {
+		return x.WealthPalaceName
+	}
+	return ""
+}
+
+func (x *PalaceInfo) GetCareerPalace() int32 {
+	if x != nil {
+		return x.CareerPalace
+	}
+	return 0
+}
+
+func (x *PalaceInfo) GetCareerPalaceName() string {
+	if x != nil {
+		return x.CareerPalaceName
+	}
+	return ""
+}
+
+type PalaceRatingEnhanced struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	PalaceIndex       int32                  `protobuf:"varint,1,opt,name=palace_index,json=palaceIndex,proto3" json:"palace_index,omitempty"`
+	PalaceName        string                 `protobuf:"bytes,2,opt,name=palace_name,json=palaceName,proto3" json:"palace_name,omitempty"`
+	OverallScore      int32                  `protobuf:"varint,3,opt,name=overall_score,json=overallScore,proto3" json:"overall_score,omitempty"`
+	WealthScore       int32                  `protobuf:"varint,4,opt,name=wealth_score,json=wealthScore,proto3" json:"wealth_score,omitempty"`
+	CareerScore       int32                  `protobuf:"varint,5,opt,name=career_score,json=careerScore,proto3" json:"career_score,omitempty"`
+	HealthScore       int32                  `protobuf:"varint,6,opt,name=health_score,json=healthScore,proto3" json:"health_score,omitempty"`
+	RelationshipScore int32                  `protobuf:"varint,7,opt,name=relationship_score,json=relationshipScore,proto3" json:"relationship_score,omitempty"`
+	StudyScore        int32                  `protobuf:"varint,8,opt,name=study_score,json=studyScore,proto3" json:"study_score,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *PalaceRatingEnhanced) Reset() {
+	*x = PalaceRatingEnhanced{}
+	mi := &file_proto_qimen_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PalaceRatingEnhanced) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PalaceRatingEnhanced) ProtoMessage() {}
+
+func (x *PalaceRatingEnhanced) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_qimen_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PalaceRatingEnhanced.ProtoReflect.Descriptor instead.
+func (*PalaceRatingEnhanced) Descriptor() ([]byte, []int) {
+	return file_proto_qimen_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *PalaceRatingEnhanced) GetPalaceIndex() int32 {
+	if x != nil {
+		return x.PalaceIndex
+	}
+	return 0
+}
+
+func (x *PalaceRatingEnhanced) GetPalaceName() string {
+	if x != nil {
+		return x.PalaceName
+	}
+	return ""
+}
+
+func (x *PalaceRatingEnhanced) GetOverallScore() int32 {
+	if x != nil {
+		return x.OverallScore
+	}
+	return 0
+}
+
+func (x *PalaceRatingEnhanced) GetWealthScore() int32 {
+	if x != nil {
+		return x.WealthScore
+	}
+	return 0
+}
+
+func (x *PalaceRatingEnhanced) GetCareerScore() int32 {
+	if x != nil {
+		return x.CareerScore
+	}
+	return 0
+}
+
+func (x *PalaceRatingEnhanced) GetHealthScore() int32 {
+	if x != nil {
+		return x.HealthScore
+	}
+	return 0
+}
+
+func (x *PalaceRatingEnhanced) GetRelationshipScore() int32 {
+	if x != nil {
+		return x.RelationshipScore
+	}
+	return 0
+}
+
+func (x *PalaceRatingEnhanced) GetStudyScore() int32 {
+	if x != nil {
+		return x.StudyScore
+	}
+	return 0
+}
+
 type QimenAnalysis struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	OverallLevel    string                 `protobuf:"bytes,1,opt,name=overall_level,json=overallLevel,proto3" json:"overall_level,omitempty"`  // 整體吉凶等級
@@ -892,7 +1124,7 @@ type QimenAnalysis struct {
 
 func (x *QimenAnalysis) Reset() {
 	*x = QimenAnalysis{}
-	mi := &file_proto_qimen_proto_msgTypes[9]
+	mi := &file_proto_qimen_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -904,7 +1136,7 @@ func (x *QimenAnalysis) String() string {
 func (*QimenAnalysis) ProtoMessage() {}
 
 func (x *QimenAnalysis) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[9]
+	mi := &file_proto_qimen_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -917,7 +1149,7 @@ func (x *QimenAnalysis) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QimenAnalysis.ProtoReflect.Descriptor instead.
 func (*QimenAnalysis) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{9}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *QimenAnalysis) GetOverallLevel() string {
@@ -964,16 +1196,19 @@ func (x *QimenAnalysis) GetDoorStarHighlights() []string {
 
 type PalaceRating struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Level         string                 `protobuf:"bytes,1,opt,name=level,proto3" json:"level,omitempty"`     // 大吉/吉/平/凶/大凶
-	Score         int32                  `protobuf:"varint,2,opt,name=score,proto3" json:"score,omitempty"`    // 分數 0-100
-	Summary       string                 `protobuf:"bytes,3,opt,name=summary,proto3" json:"summary,omitempty"` // 評語摘要
+	Level         string                 `protobuf:"bytes,1,opt,name=level,proto3" json:"level,omitempty"`         // 大吉/吉/平/凶/大凶
+	Score         int32                  `protobuf:"varint,2,opt,name=score,proto3" json:"score,omitempty"`        // 分數 0-100
+	Summary       string                 `protobuf:"bytes,3,opt,name=summary,proto3" json:"summary,omitempty"`     // 評語摘要
+	Direction     string                 `protobuf:"bytes,4,opt,name=direction,proto3" json:"direction,omitempty"` // 方位（如：北）
+	Trigram       string                 `protobuf:"bytes,5,opt,name=trigram,proto3" json:"trigram,omitempty"`     // 八卦（如：坎）
+	Element       string                 `protobuf:"bytes,6,opt,name=element,proto3" json:"element,omitempty"`     // 五行（如：水）
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PalaceRating) Reset() {
 	*x = PalaceRating{}
-	mi := &file_proto_qimen_proto_msgTypes[10]
+	mi := &file_proto_qimen_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -985,7 +1220,7 @@ func (x *PalaceRating) String() string {
 func (*PalaceRating) ProtoMessage() {}
 
 func (x *PalaceRating) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[10]
+	mi := &file_proto_qimen_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -998,7 +1233,7 @@ func (x *PalaceRating) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PalaceRating.ProtoReflect.Descriptor instead.
 func (*PalaceRating) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{10}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *PalaceRating) GetLevel() string {
@@ -1022,6 +1257,27 @@ func (x *PalaceRating) GetSummary() string {
 	return ""
 }
 
+func (x *PalaceRating) GetDirection() string {
+	if x != nil {
+		return x.Direction
+	}
+	return ""
+}
+
+func (x *PalaceRating) GetTrigram() string {
+	if x != nil {
+		return x.Trigram
+	}
+	return ""
+}
+
+func (x *PalaceRating) GetElement() string {
+	if x != nil {
+		return x.Element
+	}
+	return ""
+}
+
 type EnhancedAnalysis struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 九宮增強分析
@@ -1032,7 +1288,7 @@ type EnhancedAnalysis struct {
 
 func (x *EnhancedAnalysis) Reset() {
 	*x = EnhancedAnalysis{}
-	mi := &file_proto_qimen_proto_msgTypes[11]
+	mi := &file_proto_qimen_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1044,7 +1300,7 @@ func (x *EnhancedAnalysis) String() string {
 func (*EnhancedAnalysis) ProtoMessage() {}
 
 func (x *EnhancedAnalysis) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[11]
+	mi := &file_proto_qimen_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1057,7 +1313,7 @@ func (x *EnhancedAnalysis) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnhancedAnalysis.ProtoReflect.Descriptor instead.
 func (*EnhancedAnalysis) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{11}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *EnhancedAnalysis) GetPalaces() map[string]*PalaceEnhanced {
@@ -1087,7 +1343,7 @@ type PalaceEnhanced struct {
 
 func (x *PalaceEnhanced) Reset() {
 	*x = PalaceEnhanced{}
-	mi := &file_proto_qimen_proto_msgTypes[12]
+	mi := &file_proto_qimen_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1099,7 +1355,7 @@ func (x *PalaceEnhanced) String() string {
 func (*PalaceEnhanced) ProtoMessage() {}
 
 func (x *PalaceEnhanced) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[12]
+	mi := &file_proto_qimen_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1112,7 +1368,7 @@ func (x *PalaceEnhanced) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PalaceEnhanced.ProtoReflect.Descriptor instead.
 func (*PalaceEnhanced) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{12}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PalaceEnhanced) GetQiyiMeanings() []string {
@@ -1168,7 +1424,7 @@ type MetaInfo struct {
 
 func (x *MetaInfo) Reset() {
 	*x = MetaInfo{}
-	mi := &file_proto_qimen_proto_msgTypes[13]
+	mi := &file_proto_qimen_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1180,7 +1436,7 @@ func (x *MetaInfo) String() string {
 func (*MetaInfo) ProtoMessage() {}
 
 func (x *MetaInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[13]
+	mi := &file_proto_qimen_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1193,7 +1449,7 @@ func (x *MetaInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetaInfo.ProtoReflect.Descriptor instead.
 func (*MetaInfo) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{13}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *MetaInfo) GetTimestamp() string {
@@ -1226,7 +1482,7 @@ type TeachingRequest struct {
 
 func (x *TeachingRequest) Reset() {
 	*x = TeachingRequest{}
-	mi := &file_proto_qimen_proto_msgTypes[14]
+	mi := &file_proto_qimen_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1238,7 +1494,7 @@ func (x *TeachingRequest) String() string {
 func (*TeachingRequest) ProtoMessage() {}
 
 func (x *TeachingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[14]
+	mi := &file_proto_qimen_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1251,7 +1507,7 @@ func (x *TeachingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TeachingRequest.ProtoReflect.Descriptor instead.
 func (*TeachingRequest) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{14}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *TeachingRequest) GetSectionId() string {
@@ -1273,7 +1529,7 @@ type TeachingResponse struct {
 
 func (x *TeachingResponse) Reset() {
 	*x = TeachingResponse{}
-	mi := &file_proto_qimen_proto_msgTypes[15]
+	mi := &file_proto_qimen_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1285,7 +1541,7 @@ func (x *TeachingResponse) String() string {
 func (*TeachingResponse) ProtoMessage() {}
 
 func (x *TeachingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[15]
+	mi := &file_proto_qimen_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1298,7 +1554,7 @@ func (x *TeachingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TeachingResponse.ProtoReflect.Descriptor instead.
 func (*TeachingResponse) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{15}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *TeachingResponse) GetSuccess() bool {
@@ -1342,7 +1598,7 @@ type TeachingSection struct {
 
 func (x *TeachingSection) Reset() {
 	*x = TeachingSection{}
-	mi := &file_proto_qimen_proto_msgTypes[16]
+	mi := &file_proto_qimen_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1354,7 +1610,7 @@ func (x *TeachingSection) String() string {
 func (*TeachingSection) ProtoMessage() {}
 
 func (x *TeachingSection) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[16]
+	mi := &file_proto_qimen_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1367,7 +1623,7 @@ func (x *TeachingSection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TeachingSection.ProtoReflect.Descriptor instead.
 func (*TeachingSection) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{16}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *TeachingSection) GetId() string {
@@ -1419,7 +1675,7 @@ type TeachingContent struct {
 
 func (x *TeachingContent) Reset() {
 	*x = TeachingContent{}
-	mi := &file_proto_qimen_proto_msgTypes[17]
+	mi := &file_proto_qimen_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1431,7 +1687,7 @@ func (x *TeachingContent) String() string {
 func (*TeachingContent) ProtoMessage() {}
 
 func (x *TeachingContent) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[17]
+	mi := &file_proto_qimen_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1444,7 +1700,7 @@ func (x *TeachingContent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TeachingContent.ProtoReflect.Descriptor instead.
 func (*TeachingContent) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{17}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *TeachingContent) GetType() string {
@@ -1498,7 +1754,7 @@ type TableRow struct {
 
 func (x *TableRow) Reset() {
 	*x = TableRow{}
-	mi := &file_proto_qimen_proto_msgTypes[18]
+	mi := &file_proto_qimen_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1510,7 +1766,7 @@ func (x *TableRow) String() string {
 func (*TableRow) ProtoMessage() {}
 
 func (x *TableRow) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[18]
+	mi := &file_proto_qimen_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1523,7 +1779,7 @@ func (x *TableRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TableRow.ProtoReflect.Descriptor instead.
 func (*TableRow) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{18}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *TableRow) GetCells() []string {
@@ -1545,7 +1801,7 @@ type CasesRequest struct {
 
 func (x *CasesRequest) Reset() {
 	*x = CasesRequest{}
-	mi := &file_proto_qimen_proto_msgTypes[19]
+	mi := &file_proto_qimen_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1557,7 +1813,7 @@ func (x *CasesRequest) String() string {
 func (*CasesRequest) ProtoMessage() {}
 
 func (x *CasesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[19]
+	mi := &file_proto_qimen_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1570,7 +1826,7 @@ func (x *CasesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CasesRequest.ProtoReflect.Descriptor instead.
 func (*CasesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{19}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CasesRequest) GetCaseId() string {
@@ -1614,7 +1870,7 @@ type CasesResponse struct {
 
 func (x *CasesResponse) Reset() {
 	*x = CasesResponse{}
-	mi := &file_proto_qimen_proto_msgTypes[20]
+	mi := &file_proto_qimen_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1626,7 +1882,7 @@ func (x *CasesResponse) String() string {
 func (*CasesResponse) ProtoMessage() {}
 
 func (x *CasesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[20]
+	mi := &file_proto_qimen_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1639,7 +1895,7 @@ func (x *CasesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CasesResponse.ProtoReflect.Descriptor instead.
 func (*CasesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{20}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *CasesResponse) GetSuccess() bool {
@@ -1701,7 +1957,7 @@ type CaseStudy struct {
 
 func (x *CaseStudy) Reset() {
 	*x = CaseStudy{}
-	mi := &file_proto_qimen_proto_msgTypes[21]
+	mi := &file_proto_qimen_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1713,7 +1969,7 @@ func (x *CaseStudy) String() string {
 func (*CaseStudy) ProtoMessage() {}
 
 func (x *CaseStudy) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[21]
+	mi := &file_proto_qimen_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1726,7 +1982,7 @@ func (x *CaseStudy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CaseStudy.ProtoReflect.Descriptor instead.
 func (*CaseStudy) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{21}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *CaseStudy) GetId() string {
@@ -1854,7 +2110,7 @@ type PlateSnapshot struct {
 
 func (x *PlateSnapshot) Reset() {
 	*x = PlateSnapshot{}
-	mi := &file_proto_qimen_proto_msgTypes[22]
+	mi := &file_proto_qimen_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1866,7 +2122,7 @@ func (x *PlateSnapshot) String() string {
 func (*PlateSnapshot) ProtoMessage() {}
 
 func (x *PlateSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[22]
+	mi := &file_proto_qimen_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1879,7 +2135,7 @@ func (x *PlateSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlateSnapshot.ProtoReflect.Descriptor instead.
 func (*PlateSnapshot) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{22}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *PlateSnapshot) GetHeavenPlate() map[string]string {
@@ -1930,7 +2186,7 @@ type CaseAnalysis struct {
 
 func (x *CaseAnalysis) Reset() {
 	*x = CaseAnalysis{}
-	mi := &file_proto_qimen_proto_msgTypes[23]
+	mi := &file_proto_qimen_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1942,7 +2198,7 @@ func (x *CaseAnalysis) String() string {
 func (*CaseAnalysis) ProtoMessage() {}
 
 func (x *CaseAnalysis) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[23]
+	mi := &file_proto_qimen_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1955,7 +2211,7 @@ func (x *CaseAnalysis) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CaseAnalysis.ProtoReflect.Descriptor instead.
 func (*CaseAnalysis) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{23}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *CaseAnalysis) GetGodPalace() int32 {
@@ -2004,7 +2260,7 @@ type PatternsRequest struct {
 
 func (x *PatternsRequest) Reset() {
 	*x = PatternsRequest{}
-	mi := &file_proto_qimen_proto_msgTypes[24]
+	mi := &file_proto_qimen_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2016,7 +2272,7 @@ func (x *PatternsRequest) String() string {
 func (*PatternsRequest) ProtoMessage() {}
 
 func (x *PatternsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[24]
+	mi := &file_proto_qimen_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2029,7 +2285,7 @@ func (x *PatternsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PatternsRequest.ProtoReflect.Descriptor instead.
 func (*PatternsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{24}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *PatternsRequest) GetPatternId() string {
@@ -2066,7 +2322,7 @@ type PatternsResponse struct {
 
 func (x *PatternsResponse) Reset() {
 	*x = PatternsResponse{}
-	mi := &file_proto_qimen_proto_msgTypes[25]
+	mi := &file_proto_qimen_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2078,7 +2334,7 @@ func (x *PatternsResponse) String() string {
 func (*PatternsResponse) ProtoMessage() {}
 
 func (x *PatternsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[25]
+	mi := &file_proto_qimen_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2091,7 +2347,7 @@ func (x *PatternsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PatternsResponse.ProtoReflect.Descriptor instead.
 func (*PatternsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{25}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *PatternsResponse) GetSuccess() bool {
@@ -2146,7 +2402,7 @@ type QimenPattern struct {
 
 func (x *QimenPattern) Reset() {
 	*x = QimenPattern{}
-	mi := &file_proto_qimen_proto_msgTypes[26]
+	mi := &file_proto_qimen_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2158,7 +2414,7 @@ func (x *QimenPattern) String() string {
 func (*QimenPattern) ProtoMessage() {}
 
 func (x *QimenPattern) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_qimen_proto_msgTypes[26]
+	mi := &file_proto_qimen_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2171,7 +2427,7 @@ func (x *QimenPattern) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QimenPattern.ProtoReflect.Descriptor instead.
 func (*QimenPattern) Descriptor() ([]byte, []int) {
-	return file_proto_qimen_proto_rawDescGZIP(), []int{26}
+	return file_proto_qimen_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *QimenPattern) GetId() string {
@@ -2247,20 +2503,23 @@ const file_proto_qimen_proto_rawDesc = "" +
 	"\x04hour\x18\x02 \x01(\x05R\x04hour\x122\n" +
 	"\vmatter_type\x18\x03 \x01(\x0e2\x11.qimen.MatterTypeR\n" +
 	"matterType\x12\x16\n" +
-	"\x06liuqin\x18\x04 \x01(\tR\x06liuqin\"\xb5\x01\n" +
+	"\x06liuqin\x18\x04 \x01(\tR\x06liuqin\"\xbe\x02\n" +
 	"\x16CalculatePlateResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\x1d\n" +
 	"\n" +
 	"error_code\x18\x03 \x01(\tR\terrorCode\x12'\n" +
 	"\x05plate\x18\x04 \x01(\v2\x11.qimen.QimenPlateR\x05plate\x12#\n" +
-	"\x04meta\x18\x05 \x01(\v2\x0f.qimen.MetaInfoR\x04meta\"\x89\x01\n" +
+	"\x04meta\x18\x05 \x01(\v2\x0f.qimen.MetaInfoR\x04meta\x12S\n" +
+	"\x17palace_ratings_enhanced\x18\x06 \x03(\v2\x1b.qimen.PalaceRatingEnhancedR\x15palaceRatingsEnhanced\x122\n" +
+	"\vpalace_info\x18\a \x01(\v2\x11.qimen.PalaceInfoR\n" +
+	"palaceInfo\"\x89\x01\n" +
 	"\x13AnalyzePlateRequest\x12\x12\n" +
 	"\x04date\x18\x01 \x01(\tR\x04date\x12\x12\n" +
 	"\x04hour\x18\x02 \x01(\x05R\x04hour\x122\n" +
 	"\vmatter_type\x18\x03 \x01(\x0e2\x11.qimen.MatterTypeR\n" +
 	"matterType\x12\x16\n" +
-	"\x06liuqin\x18\x04 \x01(\tR\x06liuqin\"\xe5\x01\n" +
+	"\x06liuqin\x18\x04 \x01(\tR\x06liuqin\"\xee\x02\n" +
 	"\x14AnalyzePlateResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\x1d\n" +
@@ -2268,13 +2527,16 @@ const file_proto_qimen_proto_rawDesc = "" +
 	"error_code\x18\x03 \x01(\tR\terrorCode\x12'\n" +
 	"\x05plate\x18\x04 \x01(\v2\x11.qimen.QimenPlateR\x05plate\x120\n" +
 	"\banalysis\x18\x05 \x01(\v2\x14.qimen.QimenAnalysisR\banalysis\x12#\n" +
-	"\x04meta\x18\x06 \x01(\v2\x0f.qimen.MetaInfoR\x04meta\"\x8c\x01\n" +
+	"\x04meta\x18\x06 \x01(\v2\x0f.qimen.MetaInfoR\x04meta\x12S\n" +
+	"\x17palace_ratings_enhanced\x18\a \x03(\v2\x1b.qimen.PalaceRatingEnhancedR\x15palaceRatingsEnhanced\x122\n" +
+	"\vpalace_info\x18\b \x01(\v2\x11.qimen.PalaceInfoR\n" +
+	"palaceInfo\"\x8c\x01\n" +
 	"\x16AnalyzeEnhancedRequest\x12\x12\n" +
 	"\x04date\x18\x01 \x01(\tR\x04date\x12\x12\n" +
 	"\x04hour\x18\x02 \x01(\x05R\x04hour\x122\n" +
 	"\vmatter_type\x18\x03 \x01(\x0e2\x11.qimen.MatterTypeR\n" +
 	"matterType\x12\x16\n" +
-	"\x06liuqin\x18\x04 \x01(\tR\x06liuqin\"\x9d\x02\n" +
+	"\x06liuqin\x18\x04 \x01(\tR\x06liuqin\"\xa6\x03\n" +
 	"\x17AnalyzeEnhancedResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\x1d\n" +
@@ -2283,7 +2545,10 @@ const file_proto_qimen_proto_rawDesc = "" +
 	"\x05plate\x18\x04 \x01(\v2\x11.qimen.QimenPlateR\x05plate\x120\n" +
 	"\banalysis\x18\x05 \x01(\v2\x14.qimen.QimenAnalysisR\banalysis\x123\n" +
 	"\benhanced\x18\x06 \x01(\v2\x17.qimen.EnhancedAnalysisR\benhanced\x12#\n" +
-	"\x04meta\x18\a \x01(\v2\x0f.qimen.MetaInfoR\x04meta\"\x0f\n" +
+	"\x04meta\x18\a \x01(\v2\x0f.qimen.MetaInfoR\x04meta\x12S\n" +
+	"\x17palace_ratings_enhanced\x18\b \x03(\v2\x1b.qimen.PalaceRatingEnhancedR\x15palaceRatingsEnhanced\x122\n" +
+	"\vpalace_info\x18\t \x01(\v2\x11.qimen.PalaceInfoR\n" +
+	"palaceInfo\"\x0f\n" +
 	"\rHealthRequest\"`\n" +
 	"\x0eHealthResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
@@ -2328,7 +2593,26 @@ const file_proto_qimen_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
 	"\x0fStarsPlateEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x81\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9b\x02\n" +
+	"\n" +
+	"PalaceInfo\x12.\n" +
+	"\x13current_hour_palace\x18\x01 \x01(\x05R\x11currentHourPalace\x127\n" +
+	"\x18current_hour_palace_name\x18\x02 \x01(\tR\x15currentHourPalaceName\x12#\n" +
+	"\rwealth_palace\x18\x03 \x01(\x05R\fwealthPalace\x12,\n" +
+	"\x12wealth_palace_name\x18\x04 \x01(\tR\x10wealthPalaceName\x12#\n" +
+	"\rcareer_palace\x18\x05 \x01(\x05R\fcareerPalace\x12,\n" +
+	"\x12career_palace_name\x18\x06 \x01(\tR\x10careerPalaceName\"\xb8\x02\n" +
+	"\x14PalaceRatingEnhanced\x12!\n" +
+	"\fpalace_index\x18\x01 \x01(\x05R\vpalaceIndex\x12\x1f\n" +
+	"\vpalace_name\x18\x02 \x01(\tR\n" +
+	"palaceName\x12#\n" +
+	"\roverall_score\x18\x03 \x01(\x05R\foverallScore\x12!\n" +
+	"\fwealth_score\x18\x04 \x01(\x05R\vwealthScore\x12!\n" +
+	"\fcareer_score\x18\x05 \x01(\x05R\vcareerScore\x12!\n" +
+	"\fhealth_score\x18\x06 \x01(\x05R\vhealthScore\x12-\n" +
+	"\x12relationship_score\x18\a \x01(\x05R\x11relationshipScore\x12\x1f\n" +
+	"\vstudy_score\x18\b \x01(\x05R\n" +
+	"studyScore\"\x81\x03\n" +
 	"\rQimenAnalysis\x12#\n" +
 	"\roverall_level\x18\x01 \x01(\tR\foverallLevel\x12#\n" +
 	"\roverall_score\x18\x02 \x01(\x05R\foverallScore\x12(\n" +
@@ -2338,11 +2622,14 @@ const file_proto_qimen_proto_rawDesc = "" +
 	"\x14door_star_highlights\x18\x06 \x03(\tR\x12doorStarHighlights\x1aU\n" +
 	"\x12PalaceRatingsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12)\n" +
-	"\x05value\x18\x02 \x01(\v2\x13.qimen.PalaceRatingR\x05value:\x028\x01\"T\n" +
+	"\x05value\x18\x02 \x01(\v2\x13.qimen.PalaceRatingR\x05value:\x028\x01\"\xa6\x01\n" +
 	"\fPalaceRating\x12\x14\n" +
 	"\x05level\x18\x01 \x01(\tR\x05level\x12\x14\n" +
 	"\x05score\x18\x02 \x01(\x05R\x05score\x12\x18\n" +
-	"\asummary\x18\x03 \x01(\tR\asummary\"\xa5\x01\n" +
+	"\asummary\x18\x03 \x01(\tR\asummary\x12\x1c\n" +
+	"\tdirection\x18\x04 \x01(\tR\tdirection\x12\x18\n" +
+	"\atrigram\x18\x05 \x01(\tR\atrigram\x12\x18\n" +
+	"\aelement\x18\x06 \x01(\tR\aelement\"\xa5\x01\n" +
 	"\x10EnhancedAnalysis\x12>\n" +
 	"\apalaces\x18\x01 \x03(\v2$.qimen.EnhancedAnalysis.PalacesEntryR\apalaces\x1aQ\n" +
 	"\fPalacesEntry\x12\x10\n" +
@@ -2518,7 +2805,7 @@ func file_proto_qimen_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_qimen_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_proto_qimen_proto_msgTypes = make([]protoimpl.MessageInfo, 39)
+var file_proto_qimen_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
 var file_proto_qimen_proto_goTypes = []any{
 	(MatterType)(0),                 // 0: qimen.MatterType
 	(PatternType)(0),                // 1: qimen.PatternType
@@ -2531,94 +2818,102 @@ var file_proto_qimen_proto_goTypes = []any{
 	(*HealthRequest)(nil),           // 8: qimen.HealthRequest
 	(*HealthResponse)(nil),          // 9: qimen.HealthResponse
 	(*QimenPlate)(nil),              // 10: qimen.QimenPlate
-	(*QimenAnalysis)(nil),           // 11: qimen.QimenAnalysis
-	(*PalaceRating)(nil),            // 12: qimen.PalaceRating
-	(*EnhancedAnalysis)(nil),        // 13: qimen.EnhancedAnalysis
-	(*PalaceEnhanced)(nil),          // 14: qimen.PalaceEnhanced
-	(*MetaInfo)(nil),                // 15: qimen.MetaInfo
-	(*TeachingRequest)(nil),         // 16: qimen.TeachingRequest
-	(*TeachingResponse)(nil),        // 17: qimen.TeachingResponse
-	(*TeachingSection)(nil),         // 18: qimen.TeachingSection
-	(*TeachingContent)(nil),         // 19: qimen.TeachingContent
-	(*TableRow)(nil),                // 20: qimen.TableRow
-	(*CasesRequest)(nil),            // 21: qimen.CasesRequest
-	(*CasesResponse)(nil),           // 22: qimen.CasesResponse
-	(*CaseStudy)(nil),               // 23: qimen.CaseStudy
-	(*PlateSnapshot)(nil),           // 24: qimen.PlateSnapshot
-	(*CaseAnalysis)(nil),            // 25: qimen.CaseAnalysis
-	(*PatternsRequest)(nil),         // 26: qimen.PatternsRequest
-	(*PatternsResponse)(nil),        // 27: qimen.PatternsResponse
-	(*QimenPattern)(nil),            // 28: qimen.QimenPattern
-	nil,                             // 29: qimen.QimenPlate.EarthPlateEntry
-	nil,                             // 30: qimen.QimenPlate.HeavenPlateEntry
-	nil,                             // 31: qimen.QimenPlate.HumanPlateEntry
-	nil,                             // 32: qimen.QimenPlate.SpiritPlateEntry
-	nil,                             // 33: qimen.QimenPlate.StarsPlateEntry
-	nil,                             // 34: qimen.QimenAnalysis.PalaceRatingsEntry
-	nil,                             // 35: qimen.EnhancedAnalysis.PalacesEntry
-	nil,                             // 36: qimen.PlateSnapshot.HeavenPlateEntry
-	nil,                             // 37: qimen.PlateSnapshot.HumanPlateEntry
-	nil,                             // 38: qimen.PlateSnapshot.SpiritPlateEntry
-	nil,                             // 39: qimen.PlateSnapshot.StarsPlateEntry
-	nil,                             // 40: qimen.PlateSnapshot.EarthPlateEntry
+	(*PalaceInfo)(nil),              // 11: qimen.PalaceInfo
+	(*PalaceRatingEnhanced)(nil),    // 12: qimen.PalaceRatingEnhanced
+	(*QimenAnalysis)(nil),           // 13: qimen.QimenAnalysis
+	(*PalaceRating)(nil),            // 14: qimen.PalaceRating
+	(*EnhancedAnalysis)(nil),        // 15: qimen.EnhancedAnalysis
+	(*PalaceEnhanced)(nil),          // 16: qimen.PalaceEnhanced
+	(*MetaInfo)(nil),                // 17: qimen.MetaInfo
+	(*TeachingRequest)(nil),         // 18: qimen.TeachingRequest
+	(*TeachingResponse)(nil),        // 19: qimen.TeachingResponse
+	(*TeachingSection)(nil),         // 20: qimen.TeachingSection
+	(*TeachingContent)(nil),         // 21: qimen.TeachingContent
+	(*TableRow)(nil),                // 22: qimen.TableRow
+	(*CasesRequest)(nil),            // 23: qimen.CasesRequest
+	(*CasesResponse)(nil),           // 24: qimen.CasesResponse
+	(*CaseStudy)(nil),               // 25: qimen.CaseStudy
+	(*PlateSnapshot)(nil),           // 26: qimen.PlateSnapshot
+	(*CaseAnalysis)(nil),            // 27: qimen.CaseAnalysis
+	(*PatternsRequest)(nil),         // 28: qimen.PatternsRequest
+	(*PatternsResponse)(nil),        // 29: qimen.PatternsResponse
+	(*QimenPattern)(nil),            // 30: qimen.QimenPattern
+	nil,                             // 31: qimen.QimenPlate.EarthPlateEntry
+	nil,                             // 32: qimen.QimenPlate.HeavenPlateEntry
+	nil,                             // 33: qimen.QimenPlate.HumanPlateEntry
+	nil,                             // 34: qimen.QimenPlate.SpiritPlateEntry
+	nil,                             // 35: qimen.QimenPlate.StarsPlateEntry
+	nil,                             // 36: qimen.QimenAnalysis.PalaceRatingsEntry
+	nil,                             // 37: qimen.EnhancedAnalysis.PalacesEntry
+	nil,                             // 38: qimen.PlateSnapshot.HeavenPlateEntry
+	nil,                             // 39: qimen.PlateSnapshot.HumanPlateEntry
+	nil,                             // 40: qimen.PlateSnapshot.SpiritPlateEntry
+	nil,                             // 41: qimen.PlateSnapshot.StarsPlateEntry
+	nil,                             // 42: qimen.PlateSnapshot.EarthPlateEntry
 }
 var file_proto_qimen_proto_depIdxs = []int32{
 	0,  // 0: qimen.CalculatePlateRequest.matter_type:type_name -> qimen.MatterType
 	10, // 1: qimen.CalculatePlateResponse.plate:type_name -> qimen.QimenPlate
-	15, // 2: qimen.CalculatePlateResponse.meta:type_name -> qimen.MetaInfo
-	0,  // 3: qimen.AnalyzePlateRequest.matter_type:type_name -> qimen.MatterType
-	10, // 4: qimen.AnalyzePlateResponse.plate:type_name -> qimen.QimenPlate
-	11, // 5: qimen.AnalyzePlateResponse.analysis:type_name -> qimen.QimenAnalysis
-	15, // 6: qimen.AnalyzePlateResponse.meta:type_name -> qimen.MetaInfo
-	0,  // 7: qimen.AnalyzeEnhancedRequest.matter_type:type_name -> qimen.MatterType
-	10, // 8: qimen.AnalyzeEnhancedResponse.plate:type_name -> qimen.QimenPlate
-	11, // 9: qimen.AnalyzeEnhancedResponse.analysis:type_name -> qimen.QimenAnalysis
-	13, // 10: qimen.AnalyzeEnhancedResponse.enhanced:type_name -> qimen.EnhancedAnalysis
-	15, // 11: qimen.AnalyzeEnhancedResponse.meta:type_name -> qimen.MetaInfo
-	29, // 12: qimen.QimenPlate.earth_plate:type_name -> qimen.QimenPlate.EarthPlateEntry
-	30, // 13: qimen.QimenPlate.heaven_plate:type_name -> qimen.QimenPlate.HeavenPlateEntry
-	31, // 14: qimen.QimenPlate.human_plate:type_name -> qimen.QimenPlate.HumanPlateEntry
-	32, // 15: qimen.QimenPlate.spirit_plate:type_name -> qimen.QimenPlate.SpiritPlateEntry
-	33, // 16: qimen.QimenPlate.stars_plate:type_name -> qimen.QimenPlate.StarsPlateEntry
-	34, // 17: qimen.QimenAnalysis.palace_ratings:type_name -> qimen.QimenAnalysis.PalaceRatingsEntry
-	35, // 18: qimen.EnhancedAnalysis.palaces:type_name -> qimen.EnhancedAnalysis.PalacesEntry
-	18, // 19: qimen.TeachingResponse.sections:type_name -> qimen.TeachingSection
-	19, // 20: qimen.TeachingSection.contents:type_name -> qimen.TeachingContent
-	20, // 21: qimen.TeachingContent.rows:type_name -> qimen.TableRow
-	0,  // 22: qimen.CasesRequest.matter_type:type_name -> qimen.MatterType
-	23, // 23: qimen.CasesResponse.cases:type_name -> qimen.CaseStudy
-	0,  // 24: qimen.CaseStudy.matter_type:type_name -> qimen.MatterType
-	24, // 25: qimen.CaseStudy.plate_snapshot:type_name -> qimen.PlateSnapshot
-	25, // 26: qimen.CaseStudy.analysis:type_name -> qimen.CaseAnalysis
-	36, // 27: qimen.PlateSnapshot.heaven_plate:type_name -> qimen.PlateSnapshot.HeavenPlateEntry
-	37, // 28: qimen.PlateSnapshot.human_plate:type_name -> qimen.PlateSnapshot.HumanPlateEntry
-	38, // 29: qimen.PlateSnapshot.spirit_plate:type_name -> qimen.PlateSnapshot.SpiritPlateEntry
-	39, // 30: qimen.PlateSnapshot.stars_plate:type_name -> qimen.PlateSnapshot.StarsPlateEntry
-	40, // 31: qimen.PlateSnapshot.earth_plate:type_name -> qimen.PlateSnapshot.EarthPlateEntry
-	1,  // 32: qimen.PatternsRequest.type:type_name -> qimen.PatternType
-	28, // 33: qimen.PatternsResponse.patterns:type_name -> qimen.QimenPattern
-	1,  // 34: qimen.QimenPattern.type:type_name -> qimen.PatternType
-	12, // 35: qimen.QimenAnalysis.PalaceRatingsEntry.value:type_name -> qimen.PalaceRating
-	14, // 36: qimen.EnhancedAnalysis.PalacesEntry.value:type_name -> qimen.PalaceEnhanced
-	2,  // 37: qimen.QimenService.CalculatePlate:input_type -> qimen.CalculatePlateRequest
-	4,  // 38: qimen.QimenService.AnalyzePlate:input_type -> qimen.AnalyzePlateRequest
-	6,  // 39: qimen.QimenService.AnalyzeEnhanced:input_type -> qimen.AnalyzeEnhancedRequest
-	16, // 40: qimen.QimenService.GetTeachingSections:input_type -> qimen.TeachingRequest
-	21, // 41: qimen.QimenService.GetCases:input_type -> qimen.CasesRequest
-	26, // 42: qimen.QimenService.GetPatterns:input_type -> qimen.PatternsRequest
-	8,  // 43: qimen.QimenService.Health:input_type -> qimen.HealthRequest
-	3,  // 44: qimen.QimenService.CalculatePlate:output_type -> qimen.CalculatePlateResponse
-	5,  // 45: qimen.QimenService.AnalyzePlate:output_type -> qimen.AnalyzePlateResponse
-	7,  // 46: qimen.QimenService.AnalyzeEnhanced:output_type -> qimen.AnalyzeEnhancedResponse
-	17, // 47: qimen.QimenService.GetTeachingSections:output_type -> qimen.TeachingResponse
-	22, // 48: qimen.QimenService.GetCases:output_type -> qimen.CasesResponse
-	27, // 49: qimen.QimenService.GetPatterns:output_type -> qimen.PatternsResponse
-	9,  // 50: qimen.QimenService.Health:output_type -> qimen.HealthResponse
-	44, // [44:51] is the sub-list for method output_type
-	37, // [37:44] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	17, // 2: qimen.CalculatePlateResponse.meta:type_name -> qimen.MetaInfo
+	12, // 3: qimen.CalculatePlateResponse.palace_ratings_enhanced:type_name -> qimen.PalaceRatingEnhanced
+	11, // 4: qimen.CalculatePlateResponse.palace_info:type_name -> qimen.PalaceInfo
+	0,  // 5: qimen.AnalyzePlateRequest.matter_type:type_name -> qimen.MatterType
+	10, // 6: qimen.AnalyzePlateResponse.plate:type_name -> qimen.QimenPlate
+	13, // 7: qimen.AnalyzePlateResponse.analysis:type_name -> qimen.QimenAnalysis
+	17, // 8: qimen.AnalyzePlateResponse.meta:type_name -> qimen.MetaInfo
+	12, // 9: qimen.AnalyzePlateResponse.palace_ratings_enhanced:type_name -> qimen.PalaceRatingEnhanced
+	11, // 10: qimen.AnalyzePlateResponse.palace_info:type_name -> qimen.PalaceInfo
+	0,  // 11: qimen.AnalyzeEnhancedRequest.matter_type:type_name -> qimen.MatterType
+	10, // 12: qimen.AnalyzeEnhancedResponse.plate:type_name -> qimen.QimenPlate
+	13, // 13: qimen.AnalyzeEnhancedResponse.analysis:type_name -> qimen.QimenAnalysis
+	15, // 14: qimen.AnalyzeEnhancedResponse.enhanced:type_name -> qimen.EnhancedAnalysis
+	17, // 15: qimen.AnalyzeEnhancedResponse.meta:type_name -> qimen.MetaInfo
+	12, // 16: qimen.AnalyzeEnhancedResponse.palace_ratings_enhanced:type_name -> qimen.PalaceRatingEnhanced
+	11, // 17: qimen.AnalyzeEnhancedResponse.palace_info:type_name -> qimen.PalaceInfo
+	31, // 18: qimen.QimenPlate.earth_plate:type_name -> qimen.QimenPlate.EarthPlateEntry
+	32, // 19: qimen.QimenPlate.heaven_plate:type_name -> qimen.QimenPlate.HeavenPlateEntry
+	33, // 20: qimen.QimenPlate.human_plate:type_name -> qimen.QimenPlate.HumanPlateEntry
+	34, // 21: qimen.QimenPlate.spirit_plate:type_name -> qimen.QimenPlate.SpiritPlateEntry
+	35, // 22: qimen.QimenPlate.stars_plate:type_name -> qimen.QimenPlate.StarsPlateEntry
+	36, // 23: qimen.QimenAnalysis.palace_ratings:type_name -> qimen.QimenAnalysis.PalaceRatingsEntry
+	37, // 24: qimen.EnhancedAnalysis.palaces:type_name -> qimen.EnhancedAnalysis.PalacesEntry
+	20, // 25: qimen.TeachingResponse.sections:type_name -> qimen.TeachingSection
+	21, // 26: qimen.TeachingSection.contents:type_name -> qimen.TeachingContent
+	22, // 27: qimen.TeachingContent.rows:type_name -> qimen.TableRow
+	0,  // 28: qimen.CasesRequest.matter_type:type_name -> qimen.MatterType
+	25, // 29: qimen.CasesResponse.cases:type_name -> qimen.CaseStudy
+	0,  // 30: qimen.CaseStudy.matter_type:type_name -> qimen.MatterType
+	26, // 31: qimen.CaseStudy.plate_snapshot:type_name -> qimen.PlateSnapshot
+	27, // 32: qimen.CaseStudy.analysis:type_name -> qimen.CaseAnalysis
+	38, // 33: qimen.PlateSnapshot.heaven_plate:type_name -> qimen.PlateSnapshot.HeavenPlateEntry
+	39, // 34: qimen.PlateSnapshot.human_plate:type_name -> qimen.PlateSnapshot.HumanPlateEntry
+	40, // 35: qimen.PlateSnapshot.spirit_plate:type_name -> qimen.PlateSnapshot.SpiritPlateEntry
+	41, // 36: qimen.PlateSnapshot.stars_plate:type_name -> qimen.PlateSnapshot.StarsPlateEntry
+	42, // 37: qimen.PlateSnapshot.earth_plate:type_name -> qimen.PlateSnapshot.EarthPlateEntry
+	1,  // 38: qimen.PatternsRequest.type:type_name -> qimen.PatternType
+	30, // 39: qimen.PatternsResponse.patterns:type_name -> qimen.QimenPattern
+	1,  // 40: qimen.QimenPattern.type:type_name -> qimen.PatternType
+	14, // 41: qimen.QimenAnalysis.PalaceRatingsEntry.value:type_name -> qimen.PalaceRating
+	16, // 42: qimen.EnhancedAnalysis.PalacesEntry.value:type_name -> qimen.PalaceEnhanced
+	2,  // 43: qimen.QimenService.CalculatePlate:input_type -> qimen.CalculatePlateRequest
+	4,  // 44: qimen.QimenService.AnalyzePlate:input_type -> qimen.AnalyzePlateRequest
+	6,  // 45: qimen.QimenService.AnalyzeEnhanced:input_type -> qimen.AnalyzeEnhancedRequest
+	18, // 46: qimen.QimenService.GetTeachingSections:input_type -> qimen.TeachingRequest
+	23, // 47: qimen.QimenService.GetCases:input_type -> qimen.CasesRequest
+	28, // 48: qimen.QimenService.GetPatterns:input_type -> qimen.PatternsRequest
+	8,  // 49: qimen.QimenService.Health:input_type -> qimen.HealthRequest
+	3,  // 50: qimen.QimenService.CalculatePlate:output_type -> qimen.CalculatePlateResponse
+	5,  // 51: qimen.QimenService.AnalyzePlate:output_type -> qimen.AnalyzePlateResponse
+	7,  // 52: qimen.QimenService.AnalyzeEnhanced:output_type -> qimen.AnalyzeEnhancedResponse
+	19, // 53: qimen.QimenService.GetTeachingSections:output_type -> qimen.TeachingResponse
+	24, // 54: qimen.QimenService.GetCases:output_type -> qimen.CasesResponse
+	29, // 55: qimen.QimenService.GetPatterns:output_type -> qimen.PatternsResponse
+	9,  // 56: qimen.QimenService.Health:output_type -> qimen.HealthResponse
+	50, // [50:57] is the sub-list for method output_type
+	43, // [43:50] is the sub-list for method input_type
+	43, // [43:43] is the sub-list for extension type_name
+	43, // [43:43] is the sub-list for extension extendee
+	0,  // [0:43] is the sub-list for field type_name
 }
 
 func init() { file_proto_qimen_proto_init() }
@@ -2632,7 +2927,7 @@ func file_proto_qimen_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_qimen_proto_rawDesc), len(file_proto_qimen_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   39,
+			NumMessages:   41,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

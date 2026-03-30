@@ -368,6 +368,28 @@ type QimenAnalysisResult struct {
 	Overall       OverallAnalysis
 }
 
+// PalaceInfoSummary summarizes the key palace indices for current hour and major matters.
+type PalaceInfoSummary struct {
+	CurrentHourPalace     int
+	CurrentHourPalaceName string
+	WealthPalace          int
+	WealthPalaceName      string
+	CareerPalace          int
+	CareerPalaceName      string
+}
+
+// PalaceEnhancedScore captures multi-dimensional scores per palace.
+type PalaceEnhancedScore struct {
+	PalaceIndex       int
+	PalaceName        string
+	OverallScore      int
+	WealthScore       int
+	CareerScore       int
+	HealthScore       int
+	RelationshipScore int
+	StudyScore        int
+}
+
 var matterAdvice = map[string]map[string]string{
 	"wealth": {
 		"大吉": "財運亨通，宜投資理財、拓展業務",
@@ -453,15 +475,20 @@ func analyzeMatter(plate *QimenPlate, palaceIndex int, matterType string) Matter
 	}
 }
 
-// AnalyzeMatters produces ratings for all six standard inquiry types.
-func AnalyzeMatters(plate *QimenPlate) map[string]MatterRating {
+func determineMatterPalaces(plate *QimenPlate) map[string]int {
 	wealthP := findPalaceByDoor(plate.HumanPlate, "生門")
 	if wealthP == 0 {
 		wealthP = findPalaceByStar(plate.StarsPlate, "天任")
 	}
+	if wealthP == 0 {
+		wealthP = 8
+	}
 	careerP := findPalaceByDoor(plate.HumanPlate, "開門")
 	if careerP == 0 {
 		careerP = findPalaceByStar(plate.StarsPlate, "天心")
+	}
+	if careerP == 0 {
+		careerP = 6
 	}
 	travelP := findPalaceByDoor(plate.HumanPlate, "景門")
 	if travelP == 0 {
@@ -488,13 +515,97 @@ func AnalyzeMatters(plate *QimenPlate) map[string]MatterRating {
 	if studyP == 0 {
 		studyP = 4
 	}
+	return map[string]int{
+		"wealth":       wealthP,
+		"career":       careerP,
+		"travel":       travelP,
+		"health":       healthP,
+		"relationship": relP,
+		"study":        studyP,
+	}
+}
+
+// AnalyzeMatters produces ratings for all six standard inquiry types.
+func AnalyzeMatters(plate *QimenPlate) map[string]MatterRating {
+	palaces := determineMatterPalaces(plate)
 	return map[string]MatterRating{
-		"wealth":       analyzeMatter(plate, wealthP, "wealth"),
-		"career":       analyzeMatter(plate, careerP, "career"),
-		"travel":       analyzeMatter(plate, travelP, "travel"),
-		"health":       analyzeMatter(plate, healthP, "health"),
-		"relationship": analyzeMatter(plate, relP, "relationship"),
-		"study":        analyzeMatter(plate, studyP, "study"),
+		"wealth":       analyzeMatter(plate, palaces["wealth"], "wealth"),
+		"career":       analyzeMatter(plate, palaces["career"], "career"),
+		"travel":       analyzeMatter(plate, palaces["travel"], "travel"),
+		"health":       analyzeMatter(plate, palaces["health"], "health"),
+		"relationship": analyzeMatter(plate, palaces["relationship"], "relationship"),
+		"study":        analyzeMatter(plate, palaces["study"], "study"),
+	}
+}
+
+// GetPalaceInfoSummary derives key palace indices for hour, wealth, career.
+func GetPalaceInfoSummary(plate *QimenPlate, matters map[string]MatterRating) PalaceInfoSummary {
+	currentHourPalace := GetShichenInfo(plate.Hour).Index + 1
+	if currentHourPalace >= 5 {
+		currentHourPalace++
+	}
+	palace := PalaceMap[currentHourPalace]
+	wealth := matters["wealth"].Palace
+	if wealth == 0 {
+		wealth = findPalaceForMatter(plate, "wealth")
+	}
+	career := matters["career"].Palace
+	if career == 0 {
+		career = findPalaceForMatter(plate, "career")
+	}
+	return PalaceInfoSummary{
+		CurrentHourPalace:     currentHourPalace,
+		CurrentHourPalaceName: palace.Name,
+		WealthPalace:          wealth,
+		WealthPalaceName:      PalaceMap[wealth].Name,
+		CareerPalace:          career,
+		CareerPalaceName:      PalaceMap[career].Name,
+	}
+}
+
+// GeneratePalaceEnhancedScores builds multi-dimensional rating per palace.
+func GeneratePalaceEnhancedScores(plate *QimenPlate) []PalaceEnhancedScore {
+	scores := make([]PalaceEnhancedScore, 0, 9)
+	for i := 1; i <= 9; i++ {
+		p := PalaceMap[i]
+		base := CalculatePalaceRating(i, plate.StarsPlate[i], plate.HumanPlate[i], plate.SpiritPlate[i], plate.HeavenPlate[i])
+		score := PalaceEnhancedScore{
+			PalaceIndex:  i,
+			PalaceName:   p.Name,
+			OverallScore: base.Score,
+		}
+		matterScores := map[string]*int{
+			"wealth":       &score.WealthScore,
+			"career":       &score.CareerScore,
+			"health":       &score.HealthScore,
+			"relationship": &score.RelationshipScore,
+			"study":        &score.StudyScore,
+		}
+		for matter, ptr := range matterScores {
+			idx := findPalaceForMatter(plate, matter)
+			if idx == i {
+				*ptr = base.Score
+			}
+		}
+		scores = append(scores, score)
+	}
+	return scores
+}
+
+func findPalaceForMatter(plate *QimenPlate, matter string) int {
+	switch matter {
+	case "wealth":
+		return findPalaceByDoor(plate.HumanPlate, "生門")
+	case "career":
+		return findPalaceByDoor(plate.HumanPlate, "開門")
+	case "health":
+		return findPalaceByStar(plate.StarsPlate, "天芮")
+	case "relationship":
+		return findPalaceByDoor(plate.HumanPlate, "休門")
+	case "study":
+		return findPalaceByDoor(plate.HumanPlate, "景門")
+	default:
+		return 0
 	}
 }
 
@@ -563,21 +674,21 @@ func GenerateQimenAnalysis(plate *QimenPlate) *QimenAnalysisResult {
 
 // CombinationAnalysis holds the door-star-spirit combination result.
 type CombinationAnalysis struct {
-	Level       string
+	Level          string
 	Interpretation string
-	Advice      string
-	DoorInterp  string
-	StarInterp  string
-	SpiritInterp string
+	Advice         string
+	DoorInterp     string
+	StarInterp     string
+	SpiritInterp   string
 }
 
 // QiyiAnalysis holds the Three-Oddities/Six-Yi analysis for a stem.
 type QiyiAnalysis struct {
-	Stem          string
-	IsOddity      bool
-	Combination   string
+	Stem           string
+	IsOddity       bool
+	Combination    string
 	Interpretation string
-	Advice        string
+	Advice         string
 }
 
 // EnhancedPalaceRating extends PalaceRating with deeper combination analysis.

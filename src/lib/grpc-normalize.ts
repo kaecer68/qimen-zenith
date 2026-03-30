@@ -3,11 +3,126 @@
  * shape that existing Next.js API routes and frontend components expect.
  */
 
+type ProtoScalar = string | number | boolean | null | undefined;
+type ProtoValue = ProtoScalar | ProtoRecord | ProtoValue[];
+type ProtoRecord = Record<string, ProtoValue>;
+
+type ProtoPlate = ProtoRecord & {
+  date?: string;
+  year_gan_zhi?: string;
+  month_gan_zhi?: string;
+  day_gan_zhi?: string;
+  hour_gan_zhi?: string;
+  hour?: number;
+  shichen?: string;
+  ju_number?: number;
+  is_yang?: boolean;
+  yin_yang?: string;
+  solar_term?: string;
+  earth_plate?: Record<string, string>;
+  heaven_plate?: Record<string, string>;
+  human_plate?: Record<string, string>;
+  spirit_plate?: Record<string, string>;
+  stars_plate?: Record<string, string>;
+};
+
+type ProtoPalaceRating = ProtoRecord & {
+  level?: string;
+  score?: number;
+  summary?: string;
+};
+
+type ProtoAnalysis = ProtoRecord & {
+  overall_level?: string;
+  overall_score?: number;
+  recommendations?: string[];
+  palace_ratings?: Record<string, ProtoPalaceRating>;
+  qiyi_analysis?: string[];
+  door_star_highlights?: string[];
+};
+
+type ProtoEnhancedPalace = ProtoRecord & {
+  qiyi_meanings?: string[];
+  door_star_combinations?: string[];
+  door_spirit_combinations?: string[];
+  star_spirit_combinations?: string[];
+  special_patterns?: string[];
+  detailed_advice?: string[];
+};
+
+type ProtoEnhanced = ProtoRecord & {
+  palaces?: Record<string, ProtoEnhancedPalace>;
+};
+
+type ProtoTableRow = ProtoRecord & {
+  cells?: string[];
+};
+
+type ProtoTeachingContent = ProtoRecord & {
+  type?: string;
+  content?: string;
+  highlight_type?: string;
+  items?: string[];
+  headers?: string[];
+  rows?: ProtoTableRow[];
+};
+
+type ProtoTeachingSection = ProtoRecord & {
+  id?: string;
+  title?: string;
+  description?: string;
+  order?: number;
+  contents?: ProtoTeachingContent[];
+};
+
+type ProtoCase = ProtoRecord & {
+  id?: string;
+  title?: string;
+  description?: string;
+  date?: string;
+  hour?: number;
+  solar_term?: string;
+  ju_number?: number;
+  yin_yang?: string;
+  matter_type?: string;
+  question?: string;
+  background?: string;
+  plate_snapshot?: ProtoRecord & {
+    heaven_plate?: Record<string, string>;
+    human_plate?: Record<string, string>;
+    spirit_plate?: Record<string, string>;
+    stars_plate?: Record<string, string>;
+    earth_plate?: Record<string, string>;
+  };
+  analysis?: ProtoRecord & {
+    god_palace?: string;
+    palace_analysis?: string;
+    element_analysis?: string;
+    timing_analysis?: string;
+    direction_analysis?: string;
+  };
+  conclusion?: string;
+  lessons?: string[];
+  tags?: string[];
+};
+
+type ProtoPattern = ProtoRecord & {
+  id?: string;
+  name?: string;
+  type?: string;
+  description?: string;
+  conditions?: string[];
+  interpretation?: string;
+  applicable_matters?: string[];
+  remedies?: string;
+  examples?: string[];
+};
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Plate
 // ──────────────────────────────────────────────────────────────────────────────
 
-export function normalizePlate(p: any) {
+export function normalizePlate(p: ProtoPlate | null | undefined) {
   if (!p) return null;
   return {
     date: p.date,
@@ -33,14 +148,14 @@ export function normalizePlate(p: any) {
 // Analysis
 // ──────────────────────────────────────────────────────────────────────────────
 
-function normalizePalaceRating(r: any) {
+function normalizePalaceRating(r: ProtoPalaceRating | null | undefined) {
   if (!r) return null;
   return { level: r.level, score: r.score, summary: r.summary };
 }
 
-export function normalizeAnalysis(a: any) {
+export function normalizeAnalysis(a: ProtoAnalysis | null | undefined) {
   if (!a) return null;
-  const ratings: Record<string, any> = {};
+  const ratings: Record<string, ReturnType<typeof normalizePalaceRating>> = {};
   for (const [k, v] of Object.entries(a.palace_ratings ?? {})) {
     ratings[k] = normalizePalaceRating(v);
   }
@@ -58,7 +173,7 @@ export function normalizeAnalysis(a: any) {
 // Enhanced analysis
 // ──────────────────────────────────────────────────────────────────────────────
 
-function normalizePalaceEnhanced(pe: any) {
+function normalizePalaceEnhanced(pe: ProtoEnhancedPalace | null | undefined) {
   if (!pe) return null;
   return {
     qiyiMeanings: pe.qiyi_meanings ?? [],
@@ -70,9 +185,9 @@ function normalizePalaceEnhanced(pe: any) {
   };
 }
 
-export function normalizeEnhanced(e: any) {
+export function normalizeEnhanced(e: ProtoEnhanced | null | undefined) {
   if (!e) return null;
-  const palaces: Record<string, any> = {};
+  const palaces: Record<string, ReturnType<typeof normalizePalaceEnhanced>> = {};
   for (const [k, v] of Object.entries(e.palaces ?? {})) {
     palaces[k] = normalizePalaceEnhanced(v);
   }
@@ -83,18 +198,18 @@ export function normalizeEnhanced(e: any) {
 // Teaching
 // ──────────────────────────────────────────────────────────────────────────────
 
-function normalizeContent(c: any) {
+function normalizeContent(c: ProtoTeachingContent) {
   return {
     type: c.type,
     content: c.content,
     highlightType: c.highlight_type,
     items: c.items ?? [],
     headers: c.headers ?? [],
-    rows: (c.rows ?? []).map((r: any) => r.cells ?? []),
+    rows: (c.rows ?? []).map((r) => r.cells ?? []),
   };
 }
 
-export function normalizeSection(s: any) {
+export function normalizeSection(s: ProtoTeachingSection) {
   return {
     id: s.id,
     title: s.title,
@@ -108,7 +223,7 @@ export function normalizeSection(s: any) {
 // Cases
 // ──────────────────────────────────────────────────────────────────────────────
 
-export function normalizeCase(c: any) {
+export function normalizeCase(c: ProtoCase) {
   const snap = c.plate_snapshot ?? {};
   const ana = c.analysis ?? {};
   return {
@@ -147,7 +262,7 @@ export function normalizeCase(c: any) {
 // Patterns
 // ──────────────────────────────────────────────────────────────────────────────
 
-export function normalizePattern(p: any) {
+export function normalizePattern(p: ProtoPattern) {
   return {
     id: p.id,
     name: p.name,

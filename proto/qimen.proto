@@ -44,6 +44,8 @@ message CalculatePlateResponse {
   string error_code = 3;
   QimenPlate plate = 4;
   MetaInfo meta = 5;
+  repeated PalaceRatingEnhanced palace_ratings_enhanced = 6;
+  PalaceInfo palace_info = 7;
 }
 
 message AnalyzePlateRequest {
@@ -60,6 +62,8 @@ message AnalyzePlateResponse {
   QimenPlate plate = 4;
   QimenAnalysis analysis = 5;
   MetaInfo meta = 6;
+  repeated PalaceRatingEnhanced palace_ratings_enhanced = 7;
+  PalaceInfo palace_info = 8;
 }
 
 message AnalyzeEnhancedRequest {
@@ -77,6 +81,8 @@ message AnalyzeEnhancedResponse {
   QimenAnalysis analysis = 5;
   EnhancedAnalysis enhanced = 6;
   MetaInfo meta = 7;
+  repeated PalaceRatingEnhanced palace_ratings_enhanced = 8;
+  PalaceInfo palace_info = 9;
 }
 
 message HealthRequest {}
@@ -125,16 +131,26 @@ message QimenPlate {
   map<string, string> human_plate = 14;   // 人盤（八門）
   map<string, string> spirit_plate = 15;  // 神盤（八神）
   map<string, string> stars_plate = 16;   // 天星盤（九星）
-  
-  // 宮位資訊（含方位映射）
-  map<string, PalaceInfo> palace_info = 17;
 }
 
 message PalaceInfo {
-  string name = 1;        // 宮位名稱（如：坎一宮）
-  string trigram = 2;     // 八卦（如：坎）
-  string direction = 3;   // 方位（如：北）
-  string element = 4;     // 五行（如：水）
+  int32 current_hour_palace = 1;
+  string current_hour_palace_name = 2;
+  int32 wealth_palace = 3;
+  string wealth_palace_name = 4;
+  int32 career_palace = 5;
+  string career_palace_name = 6;
+}
+
+message PalaceRatingEnhanced {
+  int32 palace_index = 1;
+  string palace_name = 2;
+  int32 overall_score = 3;
+  int32 wealth_score = 4;
+  int32 career_score = 5;
+  int32 health_score = 6;
+  int32 relationship_score = 7;
+  int32 study_score = 8;
 }
 
 message QimenAnalysis {

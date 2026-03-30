@@ -30,6 +30,66 @@ const PALACE_SEQUENCE = [
   { key: '9', name: '離宮' },
 ];
 
+type ProtoRatingEnhanced = {
+  palace_index?: number;
+  palace_name?: string;
+  overall_score?: number;
+  wealth_score?: number;
+  career_score?: number;
+  health_score?: number;
+  relationship_score?: number;
+  study_score?: number;
+};
+
+type ProtoPalaceInfo = {
+  current_hour_palace?: number;
+  current_hour_palace_name?: string;
+  wealth_palace?: number;
+  wealth_palace_name?: string;
+  career_palace?: number;
+  career_palace_name?: string;
+};
+
+type ProtoContractPlate = {
+  yin_yang?: string;
+  stars_plate?: Record<string, string>;
+  human_plate?: Record<string, string>;
+  spirit_plate?: Record<string, string>;
+};
+
+type ProtoCalculateResponse = {
+  plate?: ProtoContractPlate;
+  palace_ratings_enhanced?: ProtoRatingEnhanced[];
+  palace_info?: ProtoPalaceInfo;
+};
+
+type ProtoAnalyzePalaceRating = {
+  level?: string;
+  direction?: string;
+};
+
+type ProtoAnalyzeResponse = {
+  analysis?: {
+    recommendations?: string[];
+    overall_level?: string;
+    palace_ratings?: Record<string, ProtoAnalyzePalaceRating>;
+  };
+  palace_ratings_enhanced?: ProtoRatingEnhanced[];
+};
+
+function normalizeEnhancedRating(rating: ProtoRatingEnhanced) {
+  return {
+    palace_index: rating.palace_index,
+    palace_name: rating.palace_name,
+    overall_score: rating.overall_score,
+    wealth_score: rating.wealth_score,
+    career_score: rating.career_score,
+    health_score: rating.health_score,
+    relationship_score: rating.relationship_score,
+    study_score: rating.study_score,
+  };
+}
+
 export function parseContractDatetime(datetime: string): { date: string; hour: number } {
   const match = datetime.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):\d{2}/);
   if (!match) {
@@ -54,7 +114,7 @@ export function resolveMatterType(purpose?: string): number {
   return PURPOSE_TO_MATTER[purpose] ?? MatterTypeProto.general;
 }
 
-export function toContractCalculateResponse(response: any) {
+export function toContractCalculateResponse(response: ProtoCalculateResponse) {
   const plate = response?.plate ?? {};
 
   return {
@@ -68,16 +128,7 @@ export function toContractCalculateResponse(response: any) {
         deity: plate.spirit_plate?.[key] ?? '',
       })),
     },
-    palace_ratings_enhanced: (response?.palace_ratings_enhanced ?? []).map((rating: any) => ({
-      palace_index: rating.palace_index,
-      palace_name: rating.palace_name,
-      overall_score: rating.overall_score,
-      wealth_score: rating.wealth_score,
-      career_score: rating.career_score,
-      health_score: rating.health_score,
-      relationship_score: rating.relationship_score,
-      study_score: rating.study_score,
-    })),
+    palace_ratings_enhanced: (response?.palace_ratings_enhanced ?? []).map(normalizeEnhancedRating),
     palace_info: response?.palace_info
       ? {
           current_hour_palace: response.palace_info.current_hour_palace,
@@ -91,8 +142,8 @@ export function toContractCalculateResponse(response: any) {
   };
 }
 
-export function toContractAnalyzeResponse(response: any) {
-  const palaceRatings = Object.entries(response?.analysis?.palace_ratings ?? {}).map(([palaceIndex, rating]: [string, any]) => ({
+export function toContractAnalyzeResponse(response: ProtoAnalyzeResponse) {
+  const palaceRatings = Object.entries(response?.analysis?.palace_ratings ?? {}).map(([palaceIndex, rating]) => ({
     palace_index: Number.parseInt(palaceIndex, 10),
     level: rating?.level ?? '',
     direction: rating?.direction ?? '',
@@ -102,15 +153,6 @@ export function toContractAnalyzeResponse(response: any) {
     overall: response?.analysis?.recommendations?.[0] ?? response?.analysis?.overall_level ?? '',
     palace_ratings: palaceRatings,
     specific_advice: (response?.analysis?.recommendations ?? []).join('；'),
-    palace_ratings_enhanced: (response?.palace_ratings_enhanced ?? []).map((rating: any) => ({
-      palace_index: rating.palace_index,
-      palace_name: rating.palace_name,
-      overall_score: rating.overall_score,
-      wealth_score: rating.wealth_score,
-      career_score: rating.career_score,
-      health_score: rating.health_score,
-      relationship_score: rating.relationship_score,
-      study_score: rating.study_score,
-    })),
+    palace_ratings_enhanced: (response?.palace_ratings_enhanced ?? []).map(normalizeEnhancedRating),
   };
 }
