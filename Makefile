@@ -21,8 +21,11 @@ proto:
 	       --go-grpc_out=. --go-grpc_opt=paths=source_relative \
 	       proto/qimen.proto
 
+VERSION := $(shell cat VERSION 2>/dev/null || echo "dev")
+LDFLAGS := -ldflags '-X main.serviceVersion=$(VERSION)'
+
 build: proto
-	go build -o bin/server ./cmd/server/
+	go build $(LDFLAGS) -o bin/server ./cmd/server/
 
 run: prepare-contract-ports
 	bash -c 'set -a; . ./.env.ports; set +a; go run ./cmd/server/'
@@ -40,6 +43,10 @@ prepare-contract-ports: sync-contracts verify-contracts
 dev-clean: prepare-contract-ports
 	@chmod +x scripts/dev-clean.sh
 	bash scripts/dev-clean.sh
+
+check-version:
+	@chmod +x scripts/check-version-consistency.sh
+	bash scripts/check-version-consistency.sh
 
 tidy:
 	go mod tidy
