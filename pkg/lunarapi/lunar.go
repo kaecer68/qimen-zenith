@@ -9,14 +9,6 @@ import (
 	"time"
 )
 
-var stems = []string{"甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"}
-var branches = []string{"子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"}
-
-type pillarRaw struct {
-	StemIndex   int `json:"StemIndex"`
-	BranchIndex int `json:"BranchIndex"`
-}
-
 type lunarDataRaw struct {
 	GregorianDate string  `json:"gregorian_date"`
 	JulianDay     float64 `json:"julian_day"`
@@ -30,10 +22,10 @@ type lunarDataRaw struct {
 	Buddhist string `json:"buddhist"`
 	Taoist   string `json:"taoist"`
 	Pillars  struct {
-		Year  pillarRaw `json:"Year"`
-		Month pillarRaw `json:"Month"`
-		Day   pillarRaw `json:"Day"`
-		Hour  pillarRaw `json:"Hour"`
+		Year  string `json:"year"`
+		Month string `json:"month"`
+		Day   string `json:"day"`
+		Hour  string `json:"hour"`
 	} `json:"pillars"`
 	SolarTerm struct {
 		Index     int     `json:"Index"`
@@ -103,18 +95,6 @@ type LunarData struct {
 
 var httpClient = &http.Client{Timeout: 10 * time.Second}
 
-func pillarToGanZhi(p pillarRaw) string {
-	stem := "?"
-	branch := "?"
-	if p.StemIndex >= 0 && p.StemIndex < len(stems) {
-		stem = stems[p.StemIndex]
-	}
-	if p.BranchIndex >= 0 && p.BranchIndex < len(branches) {
-		branch = branches[p.BranchIndex]
-	}
-	return stem + branch
-}
-
 // GetLunarData fetches calendar data for a date string "YYYY-MM-DD".
 func GetLunarData(date string) (*LunarData, error) {
 	base := strings.TrimRight(os.Getenv("LUNAR_API_URL"), "/")
@@ -152,10 +132,10 @@ func GetLunarData(date string) (*LunarData, error) {
 			IsLeap: raw.Lunar.IsLeap,
 		},
 		Pillars: Pillars{
-			Year:  pillarToGanZhi(raw.Pillars.Year),
-			Month: pillarToGanZhi(raw.Pillars.Month),
-			Day:   pillarToGanZhi(raw.Pillars.Day),
-			Hour:  pillarToGanZhi(raw.Pillars.Hour),
+			Year:  raw.Pillars.Year,
+			Month: raw.Pillars.Month,
+			Day:   raw.Pillars.Day,
+			Hour:  raw.Pillars.Hour,
 		},
 		SolarTerm: SolarTermInfo{
 			Index:     raw.SolarTerm.Index,
