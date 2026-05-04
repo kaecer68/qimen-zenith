@@ -576,7 +576,7 @@ export function QimenAnalysis({ plate, matterType = 'general', liuqin }: QimenAn
   const palaceOrder = [4, 9, 2, 3, 5, 7, 8, 1, 6];
 
   return (
-    <Card className="w-full max-w-4xl mx-auto mt-6">
+    <Card className="card-elevated border-0 mt-6">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">吉凶解說</CardTitle>

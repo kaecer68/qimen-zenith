@@ -79,7 +79,7 @@ export function ExportPanel({ plate, matterType, liuqin }: ExportPanelProps) {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="card-elevated border-0">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg">匯出排盤</CardTitle>
       </CardHeader>

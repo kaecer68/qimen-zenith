@@ -148,7 +148,7 @@ export function RecordsManager({
   const getMatterTypeName = (type: MatterType) => MATTER_CONFIG[type]?.name || type;
 
   return (
-    <Card className="w-full">
+    <Card className="card-elevated border-0">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">排盤記錄</CardTitle>
