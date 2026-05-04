@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: res.error, code: res.error_code }, { status });
     }
 
-    const patterns = (res.patterns ?? []).map(normalizePattern);
+    const patterns = Array.isArray(res.patterns) ? res.patterns.map(normalizePattern) : [];
 
     if (id) {
       return NextResponse.json({

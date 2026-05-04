@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       : await qimenClient.analyzePlate(req);
 
     if (!res.success) {
-      const isLunar = (res.error_code || '').includes('LUNAR');
+      const isLunar = String(res.error_code || '').includes('LUNAR');
       return NextResponse.json(
         { error: res.error, code: res.error_code },
         { status: isLunar ? 503 : 500 }

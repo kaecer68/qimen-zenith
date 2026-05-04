@@ -3,8 +3,7 @@
  * shape that existing Next.js API routes and frontend components expect.
  */
 
-type ProtoScalar = string | number | boolean | null | undefined;
-type ProtoValue = ProtoScalar | ProtoRecord | ProtoValue[];
+type ProtoValue = any;
 type ProtoRecord = Record<string, ProtoValue>;
 
 type ProtoPlate = ProtoRecord & {

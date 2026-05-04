@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: res.error, code: res.error_code }, { status });
     }
 
-    const cases = (res.cases ?? []).map(normalizeCase);
+    const cases = Array.isArray(res.cases) ? res.cases.map(normalizeCase) : [];
 
     if (id) {
       return NextResponse.json({

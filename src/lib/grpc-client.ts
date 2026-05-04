@@ -76,9 +76,9 @@ function call<Req, Res>(method: string, request: Req): Promise<Res> {
   return new Promise<Res>((resolve, reject) => {
     const client = getClient();
     const rpc = client[method as keyof QimenGrpcService] as QimenGrpcService[keyof QimenGrpcService];
-    rpc.call(client, request, (err: grpc.ServiceError | null, response: Res) => {
+    rpc.call(client, request, (err: grpc.ServiceError | null, response: unknown) => {
       if (err) reject(err);
-      else resolve(response);
+      else resolve(response as Res);
     });
   });
 }
@@ -114,10 +114,7 @@ export interface PatternsRequest {
   search?: string;
 }
 
-export type GrpcScalar = string | number | boolean | null | undefined;
-export type GrpcMap = Record<string, GrpcScalar | GrpcMap | GrpcList>;
-export type GrpcList = Array<GrpcScalar | GrpcMap | GrpcList>;
-export type GrpcMessage = Record<string, GrpcScalar | GrpcMap | GrpcList>;
+export type GrpcMessage = Record<string, any>;
 
 export interface HealthResponse extends GrpcMessage {
   status?: string;

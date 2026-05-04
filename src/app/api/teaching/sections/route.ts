@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: res.error, code: res.error_code }, { status });
     }
 
-    const sections = (res.sections ?? []).map(normalizeSection);
+    const sections = Array.isArray(res.sections) ? res.sections.map(normalizeSection) : [];
 
     if (id) {
       return NextResponse.json({
