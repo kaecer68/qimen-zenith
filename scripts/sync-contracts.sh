@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-CONTRACTS_DIR="${CONTRACTS_DIR:-$REPO_ROOT/../destiny-contracts}"
+CONTRACTS_DIR="${CONTRACTS_DIR:-$REPO_ROOT/contracts}"
 CONTRACT_PORTS_FILE="${CONTRACT_PORTS_FILE:-$CONTRACTS_DIR/runtime/ports.env}"
 TARGET_PORTS_FILE="${TARGET_PORTS_FILE:-$REPO_ROOT/.env.ports}"
 
@@ -14,7 +14,7 @@ if [[ "${1:-}" == "--check" ]]; then
   MODE="check"
 fi
 
-required_keys=("QIMEN_GRPC_PORT" "QIMEN_WEB_PORT" "LUNAR_REST_PORT")
+required_keys=("QIMEN_GRPC_PORT" "QIMEN_REST_PORT" "LUNAR_REST_PORT")
 
 get_value() {
   local key="$1"
@@ -41,9 +41,9 @@ validate_contract_file() {
 }
 
 render_target_file() {
-  local grpc_port web_port lunar_port
+  local grpc_port rest_port lunar_port
   grpc_port="$(get_value "QIMEN_GRPC_PORT")"
-  web_port="$(get_value "QIMEN_WEB_PORT")"
+  rest_port="$(get_value "QIMEN_REST_PORT")"
   lunar_port="$(get_value "LUNAR_REST_PORT")"
 
   cat <<EOF
@@ -51,15 +51,16 @@ render_target_file() {
 # 契約來源：$CONTRACT_PORTS_FILE
 
 QIMEN_GRPC_PORT=$grpc_port
-QIMEN_WEB_PORT=$web_port
+QIMEN_REST_PORT=$rest_port
+QIMEN_WEB_PORT=$rest_port
 LUNAR_REST_PORT=$lunar_port
 
 QIMEN_GRPC_HOST=127.0.0.1:$grpc_port
-QIMEN_WEB_URL=http://127.0.0.1:$web_port
+QIMEN_WEB_URL=http://127.0.0.1:$rest_port
 LUNAR_API_URL=http://127.0.0.1:$lunar_port
 
 GRPC_PORT=$grpc_port
-PORT=$web_port
+PORT=$rest_port
 EOF
 }
 

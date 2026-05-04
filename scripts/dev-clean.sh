@@ -14,12 +14,14 @@ fi
 # shellcheck disable=SC1090
 source "$PORTS_FILE"
 
-if [[ -z "${QIMEN_GRPC_PORT:-}" || -z "${QIMEN_WEB_PORT:-}" ]]; then
-  echo "[dev-clean] .env.ports 缺少 QIMEN_GRPC_PORT 或 QIMEN_WEB_PORT" >&2
+qimen_rest_port="${QIMEN_REST_PORT:-${QIMEN_WEB_PORT:-}}"
+
+if [[ -z "${QIMEN_GRPC_PORT:-}" || -z "${qimen_rest_port:-}" ]]; then
+  echo "[dev-clean] .env.ports 缺少 QIMEN_GRPC_PORT 或 QIMEN_REST_PORT" >&2
   exit 1
 fi
 
-ports=("$QIMEN_GRPC_PORT" "$QIMEN_WEB_PORT")
+ports=("$QIMEN_GRPC_PORT" "$qimen_rest_port")
 for port in "${ports[@]}"; do
   pids="$(lsof -tiTCP:"$port" -sTCP:LISTEN || true)"
   if [[ -n "$pids" ]]; then

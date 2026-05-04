@@ -1,38 +1,38 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
-function readEnvPorts(): Record<string, string> {
-  const filePath = path.resolve(process.cwd(), '.env.ports');
-  if (!fs.existsSync(filePath)) {
+function loadEnvFile(filePath: string): Record<string, string> {
+  const env: Record<string, string> = {};
+  
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      
+      const eqIndex = trimmed.indexOf('=');
+      if (eqIndex > 0) {
+        const key = trimmed.substring(0, eqIndex).trim();
+        const value = trimmed.substring(eqIndex + 1).trim();
+        env[key] = value;
+      }
+    }
+  } catch {
     return {};
   }
-
-  return fs
-    .readFileSync(filePath, 'utf-8')
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith('#') && line.includes('='))
-    .reduce<Record<string, string>>((acc, line) => {
-      const [key, ...rest] = line.split('=');
-      acc[key.trim()] = rest.join('=').trim();
-      return acc;
-    }, {});
+  
+  return env;
 }
+
+const envPorts = loadEnvFile(path.join(process.cwd(), '.env.ports'));
 
 export function getRuntimeValue(keys: string[]): string | undefined {
   for (const key of keys) {
-    const envValue = process.env[key]?.trim();
-    if (envValue) {
-      return envValue;
-    }
-  }
-
-  const envPorts = readEnvPorts();
-  for (const key of keys) {
-    const fileValue = envPorts[key]?.trim();
-    if (fileValue) {
-      return fileValue;
-    }
+    const value = process.env[key]?.trim();
+    if (value) return value;
+    
+    const envValue = envPorts[key]?.trim();
+    if (envValue) return envValue;
   }
 
   return undefined;
@@ -54,8 +54,12 @@ export function getQimenGrpcHost(): string {
 }
 
 export function getLunarApiUrl(): string {
-  return requireRuntimeValue(
-    ['LUNAR_API_URL'],
-    'Lunar API URL'
-  ).replace(/\/$/, '');
+  const value = getRuntimeValue(['LUNAR_API_URL', 'LUNAR_REST_PORT']);
+  if (!value) {
+    throw new Error('Lunar API URL is required. Run scripts/sync-contracts.sh or export LUNAR_API_URL.');
+  }
+  if (/^\d+$/.test(value)) {
+    return `http://localhost:${value}`;
+  }
+  return value.replace(/\/$/, '');
 }
