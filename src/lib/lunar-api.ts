@@ -3,13 +3,7 @@
  * 用於獲取曆法基礎數據
  */
 
-// lunar-zenith 返回的四柱結構（天干地支索引）
-interface PillarRaw {
-  StemIndex: number;
-  BranchIndex: number;
-}
-
-// lunar-zenith 原始 API 回應
+// lunar-zenith 原始 API 回應（新版格式：直接回傳干支字串）
 interface LunarDataRaw {
   gregorian_date: string;
   julian_day: number;
@@ -23,10 +17,10 @@ interface LunarDataRaw {
   buddhist: string;
   taoist: string;
   pillars: {
-    Year: PillarRaw;
-    Month: PillarRaw;
-    Day: PillarRaw;
-    Hour: PillarRaw;
+    year: string;   // e.g. "丙午"
+    month: string;  // e.g. "壬辰"
+    day: string;    // e.g. "戊寅"
+    hour: string;   // e.g. "甲寅"
   };
   solar_term: {
     Index: number;
@@ -79,18 +73,6 @@ export interface LunarData {
   };
 }
 
-// 十天干
-const STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'] as const;
-// 十二地支
-const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'] as const;
-
-/** 將天干地支索引轉為干支字串（如 StemIndex=5, BranchIndex=1 → "己丑"）*/
-function pillarToGanZhi(pillar: PillarRaw): string {
-  const stem = STEMS[pillar.StemIndex] || '?';
-  const branch = BRANCHES[pillar.BranchIndex] || '?';
-  return `${stem}${branch}`;
-}
-
 /** 將 lunar-zenith 原始回應轉為標準化格式 */
 function normalizeLunarData(raw: LunarDataRaw): LunarData {
   return {
@@ -106,10 +88,10 @@ function normalizeLunarData(raw: LunarDataRaw): LunarData {
     buddhist: raw.buddhist,
     taoist: raw.taoist,
     pillars: {
-      year: pillarToGanZhi(raw.pillars.Year),
-      month: pillarToGanZhi(raw.pillars.Month),
-      day: pillarToGanZhi(raw.pillars.Day),
-      hour: pillarToGanZhi(raw.pillars.Hour),
+      year: raw.pillars.year,
+      month: raw.pillars.month,
+      day: raw.pillars.day,
+      hour: raw.pillars.hour,
     },
     solar_term: {
       index: raw.solar_term.Index,
